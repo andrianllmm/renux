@@ -8,6 +8,7 @@ from rich.text import Text
 from rich.tree import Tree
 from rich.prompt import Confirm
 from slugify import slugify
+from typing import Callable
 
 
 # Custom console theme for displaying messages
@@ -256,7 +257,7 @@ def apply_text_operations(text: str) -> str:
     markup_pattern = re.compile(r"\{([^|]+)\|([^\}]+)\}")
 
     # Mapping operations to corresponding functions
-    operations = {
+    operations: dict[str, Callable[[str], str]] = {
         "slugify": slugify,
         "upper": str.upper,
         "lower": str.lower,
