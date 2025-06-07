@@ -2,25 +2,72 @@ import os
 import re
 import argparse
 import datetime
+import pyfiglet
 from rich.console import Console
-from rich.theme import Theme
-from rich.text import Text
-from rich.tree import Tree
+from rich.panel import Panel
 from rich.prompt import Confirm
+from rich.text import Text
+from rich.theme import Theme
+from rich.tree import Tree
 from slugify import slugify
 from typing import Callable
 
-
 # Custom console theme for displaying messages
+primary = "sandy_brown"
+secondary = "magenta"
 custom_theme = Theme(
     {
+        "primary": primary,
+        "primary bold": f"{primary} bold",
+        "secondary": secondary,
+        "secondary bold": f"{secondary} bold",
+        "change": secondary,
         "success": "green",
         "error": "red",
-        "warning": "yellow",
-        "muted": "grey50",
+        "warning": "orange1",
+        "muted": "grey66",
+        "repr.number": secondary,
+        "repr.string": secondary,
     }
 )
 console = Console(theme=custom_theme)
+
+# Custom ascii art banner
+banner = pyfiglet.figlet_format("RE.NAME", font="smkeyboard")
+
+project_links = [
+    {"name": "GitHub", "link": "https://github.com/andrianllmm/re.name"},
+    {
+        "name": "README",
+        "link": "https://github.com/andrianllmm/re.name#readme",
+    },
+    {"name": "Author", "link": "https://andrianllmm.github.io/"},
+]
+
+
+class CustomParser(argparse.ArgumentParser):
+    def print_help(self, *args, **kwargs):
+        console.print(Text(banner, style="primary bold"))
+        for p in project_links:
+            console.print(p["name"], style=f"bold link {p['link']}", end="\t")
+        print("\n")
+        super().print_help(*args, **kwargs)
+        print()
+
+    def print_usage(self, file=None):
+        console.print(Text(banner, style="primary bold"))
+        for p in project_links:
+            console.print(p["name"], style=f"bold link {p['link']}", end="\t")
+        print("\n")
+        super().print_usage(file)
+        print()
+
+    def error(self, message):
+        self.print_usage()
+        console.print("Error:", style="error", end=" ")
+        console.print(message)
+        print()
+        self.exit(2)
 
 
 def main() -> None:
@@ -30,14 +77,17 @@ def main() -> None:
 
     # Validate the directory path
     if not os.path.isdir(args.directory):
-        console.print(f"Directory '{args.directory}' does not exist.", style="error")
+        console.print(f"Directory {args.directory} does not exist.", style="error")
         return
 
     # Get list of file names in the specified directory
     files = [entry.name for entry in os.scandir(args.directory) if entry.is_file()]
     if len(files) == 0:
-        console.print(f"No files found in '{args.directory}'.", style="error")
+        console.print(f"No files found in {args.directory}.", style="error")
         return
+
+    # Display the banner
+    console.print(Text(banner, style="primary"), end="\n\n")
 
     # Perform file renaming
     rename_files(
@@ -50,6 +100,8 @@ def main() -> None:
         args.regex,
         args.apply_to,
     )
+
+    print()
 
 
 def rename_files(
@@ -90,11 +142,11 @@ def rename_files(
             )
         except re.error as e:
             console.print(
-                f"Regex error while processing '{file_name}': {e}", style="error"
+                f"Regex error while processing {file_name}: {e}", style="error"
             )
             continue
         except Exception as e:
-            console.print(f"Unexpected error in '{file_name}': {e}", style="error")
+            console.print(f"Unexpected error in {file_name}: {e}", style="error")
             continue
         renamed_files.append((file_name, new_name))
 
@@ -102,19 +154,22 @@ def rename_files(
         file_text = Text()
         file_text.append(file_name, style="muted")
         file_text.append(" → " if file_name != new_name else "", style="white")
-        file_text.append(new_name if file_name != new_name else "", style="cyan")
+        file_text.append(new_name if file_name != new_name else "", style="change")
         file_tree.add(file_text)
 
     # Summary of renaming actions
     total_files = len(renamed_files)
     total_renamed_files = sum(1 for f in renamed_files if f[0] != f[1])
     console.print(
-        f"{total_renamed_files}/{total_files} files will be renamed.",
+        f"{total_renamed_files}/{total_files} files will be renamed",
+        style="muted",
         highlight=False,
     )
 
     # Display file renaming results
-    console.print("", file_tree, "")
+    console.print(
+        Panel(file_tree, border_style="primary", expand=False),
+    )
 
     # Abort if no files need renaming
     if total_renamed_files <= 0:
@@ -149,18 +204,18 @@ def rename_files(
             os.rename(old_path, new_path)
         except FileExistsError as e:
             console.print(
-                f"'{new_name}' already exists. Skipping rename.", style="warning"
+                f"{new_name} already exists. Skipping rename.", style="warning"
             )
             continue
         except PermissionError as e:
             console.print(
-                f"Permission error renaming '{old_name}' -> '{new_name}': {e}",
+                f"Permission error renaming {old_name} -> {new_name}: {e}",
                 style="error",
             )
             continue
         except Exception as e:
             console.print(
-                f"Error renaming '{old_name}' -> '{new_name}': {e}", style="error"
+                f"Error renaming {old_name} -> {new_name}: {e}", style="error"
             )
             continue
 
@@ -294,8 +349,9 @@ def apply_text_operations(text: str) -> str:
 
 def parse_arguments() -> argparse.Namespace:
     """Parse and return the command-line arguments."""
-    parser = argparse.ArgumentParser(
-        description="A Python command-line tool for bulk file renaming and organization using regex."
+    parser = CustomParser(
+        description="A command-line tool for bulk file renaming and organization using regex.",
+        epilog="Example: /files 'old' 'new' --case-sensitive -r",
     )
 
     parser.add_argument(
