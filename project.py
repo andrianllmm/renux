@@ -30,11 +30,14 @@ def main() -> None:
 
     # Validate the directory path
     if not os.path.isdir(args.directory):
-        console.print(f"Directory {args.directory} does not exist.", style="error")
+        console.print(f"Directory '{args.directory}' does not exist.", style="error")
         return
 
     # Get list of file names in the specified directory
     files = [entry.name for entry in os.scandir(args.directory) if entry.is_file()]
+    if len(files) == 0:
+        console.print(f"No files found in '{args.directory}'.", style="error")
+        return
 
     # Perform file renaming
     rename_files(
@@ -73,17 +76,26 @@ def rename_files(
     # Store the original and new name of each file
     renamed_files: list[tuple[str, str]] = []
     for file_name in files:
-        new_name = get_rename(
-            file_name,
-            directory,
-            pattern,
-            replacement,
-            count,
-            case_sensitive,
-            use_regex,
-            apply_to,
-            counters,
-        )
+        try:
+            new_name = get_rename(
+                file_name,
+                directory,
+                pattern,
+                replacement,
+                count,
+                case_sensitive,
+                use_regex,
+                apply_to,
+                counters,
+            )
+        except re.error as e:
+            console.print(
+                f"Regex error while processing '{file_name}': {e}", style="error"
+            )
+            continue
+        except Exception as e:
+            console.print(f"Unexpected error in '{file_name}': {e}", style="error")
+            continue
         renamed_files.append((file_name, new_name))
 
         # Update the tree to reflect the changes
@@ -137,18 +149,18 @@ def rename_files(
             os.rename(old_path, new_path)
         except FileExistsError as e:
             console.print(
-                f"{new_name} already exists. Skipping rename.", style="warning"
+                f"'{new_name}' already exists. Skipping rename.", style="warning"
             )
             continue
         except PermissionError as e:
             console.print(
-                f"Permission error renaming {old_name} -> {new_name}: {e}",
+                f"Permission error renaming '{old_name}' -> '{new_name}': {e}",
                 style="error",
             )
             continue
         except Exception as e:
             console.print(
-                f"Error renaming {old_name} -> {new_name}: {e}", style="error"
+                f"Error renaming '{old_name}' -> '{new_name}': {e}", style="error"
             )
             continue
 

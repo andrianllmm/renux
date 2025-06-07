@@ -41,7 +41,7 @@ re.name/
 - `requirements.txt`: Lists all the required Python packages.
 - `README.md`: Project documentation (this file).
 
-## Installaltion
+## Installation
 
 1. Clone the repository:
 

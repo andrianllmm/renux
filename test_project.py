@@ -27,6 +27,8 @@ def mock_os_functions():
     ) as mock_getctime, patch(
         "os.path.getmtime", MagicMock()
     ) as mock_getmtime:
+
+        # Yield the mocks so the test can access and control their behavior
         yield {
             "isdir": mock_isdir,
             "scandir": mock_scandir,
@@ -41,27 +43,28 @@ def test_rename_files_multiple(mock_os_functions):
     """
     Test renaming multiple files at once.
     """
+    files = ["file1.txt", "file2.txt", "file3.txt"]
+    pattern = "file"
+    replacement = "newfile"
+
     mock_isdir = mock_os_functions["isdir"]
     mock_scandir = mock_os_functions["scandir"]
     mock_rename = mock_os_functions["rename"]
     mock_exists = mock_os_functions["exists"]
 
     mock_isdir.return_value = True
-    mock_scandir.return_value = [
-        MagicMock(is_file=MagicMock(return_value=True), name="file1.txt"),
-        MagicMock(is_file=MagicMock(return_value=True), name="file2.txt"),
-        MagicMock(is_file=MagicMock(return_value=True), name="file3.txt"),
-    ]
+    mock_scandir.return_value = list(
+        map(lambda f: MagicMock(is_file=MagicMock(return_value=True), name=f), files)
+    )
     mock_exists.return_value = False
 
     # Mock user confirmation prompt
     with patch("rich.prompt.Confirm.ask", return_value=True):
-        files = ["file1.txt", "file2.txt", "file3.txt"]
         rename_files(
             files=files,
             directory=".",
-            pattern="file",
-            replacement="newfile",
+            pattern=pattern,
+            replacement=replacement,
             count=0,
             case_sensitive=False,
             use_regex=False,
@@ -128,13 +131,22 @@ def test_get_rename():
 
     # Use regex
     result = get_rename(
-        file_name="FILE1.txt",
+        file_name="FILE123.txt",
         directory=".",
         pattern=r"\d+",
         replacement="",
         use_regex=True,
     )
     assert result == "FILE.txt"
+    # Group capture and reference
+    result = get_rename(
+        file_name="file123name.txt",
+        directory=".",
+        pattern=r"(file)(\d+)(name)",
+        replacement=r"\3-\2-\1",
+        use_regex=True,
+    )
+    assert result == "name-123-file.txt"
 
     # Apply to extension
     result = get_rename(
