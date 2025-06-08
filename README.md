@@ -1,73 +1,32 @@
 # re.name
 
-**A Python command-line tool for bulk file renaming and organization using regex.**
+**A command-line tool with terminal UI for bulk file renaming and organization using regex.**
 
 **[Video Demo](https://www.youtube.com/watch?v=dQw4w9WgXcQ)**
 
 ## About
 
-`re.name` is a Python-based CLI tool that automates file renaming and organization tasks. It simplifies bulk renaming with features like regex, placeholders (counter, date), and text transformations, making it ideal for situations such as renaming photos, cleaning up download folders, or enforcing consistent naming conventions.
+`re.name` is a Python CLI tool featuring a terminal user interface (TUI) that automates file renaming. It simplifies bulk renaming with features like regex, placeholders (counter, date), and text transformations, making it ideal for situations such as renaming photos, cleaning up download folders, or enforcing consistent naming conventions.
 
 ## Features
 
-- **Regex:** Perform advanced renaming with pattern matching, capturing groups, and replacements.
-- **Targeted Renaming:** Rename file names, extensions, or both, offering full control over which parts of a file to modify.
-- **Case Sensitivity:** Switch between case-sensitive and case-insensitive searches.
-- **Counter Placeholders:** Add incremental counters (e.g., file1.txt, file2.txt) with customizable starting points, increments, and padding.
-- **Date Placeholders:** Include file creation/modification dates or the current date in your filenames with customizable formats.
-- **Text Transformations:** Apply transformations like slugify, capitalize, reverse, and others.
-- **Safe Renaming:** Dry-run mode previews changes, checks for duplicate names, and confirms before applying changes.
-- **Rich Console Output:** Visual tree views and clear, informative outputs using the `rich` library.
+- **Regex**: perform advanced renaming with pattern matching, capturing groups, and replacements.
+- **Case sensitivity**: switch between case-sensitive and case-insensitive searches.
+- **Targeted renaming**: rename file names, extensions, or both, offering full control over which parts of a file to modify.
+- **Counter placeholders**: add incremental counters (e.g., file1.txt, file2.txt) with customizable starting points, increments, and padding.
+- **Date placeholders**: include file creation/modification dates or the current date in your filenames with customizable formats.
+- **Text transformations**: apply transformations like slugify, capitalize, reverse, and others.
+- **Safe renaming**: live previews changes, checks for duplicate names, and confirms before applying changes.
+- **Interactive terminal UI**: clear form input fields and file tree view using the `textual` and `rich` library
+- **Keyboard shortcuts**: use hotkeys to quickly apply actions.
 
 ## Design Choices
 
-- **Regex vs Glob**: `re.name` uses regex for file renaming instead of simpler globbing (wildcards like `*` and `?`). Regex allow for complex and precise pattern matching and substitution, such as matching specific parts of filenames, capturing groups, and applying transformations based on conditions.
+- **Regex vs Glob**: uses regex for file renaming instead of simpler globbing (wildcards like `*` and `?`). Regex allow for complex and precise pattern matching and substitution, such as matching specific parts of filenames, capturing groups, and applying transformations based on conditions.
+- **CLI/TUI vs GUI**: follows a command-line interface (CLI) and terminal user interface (TUI) approach instead of a graphical user interface (GUI). Using the terminal allow for faster bulk operations by just using the keyboard once familiarized.
+- **Use of Textual library**: uses the `textual` library for the TUI interface, which provides a rich and interactive user interface. The library allows for easy customization without the need for extensive code.
 
-- **CLI vs GUI**: `re.name` follows a command-line interface (CLI) approach instead of a graphical user interface (GUI). CLI
-  allow for faster bulk operations by just using the keyboard once familiarized.
-
-## File Structure
-
-```
-re.name/
-├── project.py
-├── requirements.txt
-├── test_project.py
-├── README.md
-```
-
-- `project.py`: The core script for the renaming logic.
-- `test_project.py`: Unit tests to validate the tool’s functionality.
-- `requirements.txt`: Lists all the required Python packages.
-- `README.md`: Project documentation (this file).
-
-## Installation
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/andrianllmm/re.name.git
-cd re.name
-```
-
-2. Create and activate virtual environment:
-
-```bash
-python -m venv venv
-
-# Linux/macOS:
-source venv/bin/activate
-# Windows:
-.\venv\Scripts\activate
-```
-
-3. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-### Usage
+## Usage
 
 ```bash
 python project.py [directory] pattern replacement
@@ -133,7 +92,60 @@ Run `python project.py -h` for more details.
   python project.py my_files "(.*)" "{filename|slugify}" -r
   ```
 
-## Testing
+## File Structure
+
+```
+re.name/
+├── project.py
+├── test_project.py
+├── styles.tcss
+├── requirements.txt
+├── README.md
+```
+
+- `project.py`: The core script for the renaming logic and TUI interface.
+- `test_project.py`: Unit tests to validate the tool’s functionality.
+- `styles.tcss`: The CSS styles for the TUI interface.
+- `requirements.txt`: Lists all the required Python packages.
+- `README.md`: Project documentation (this file).
+
+## Development
+
+### Tech Stack
+
+- **Python**
+- **Textual**: TUI library for building interactive terminal applications.
+- **Rich**: Library for rich text and formatting in terminal applications.
+- **argparse**: Library for parsing command-line arguments.
+- **pytest**: Testing framework for unit tests.
+
+### Setup
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/andrianllmm/re.name.git
+cd re.name
+```
+
+2. Create and activate virtual environment:
+
+```bash
+python -m venv venv
+
+# Linux/macOS:
+source venv/bin/activate
+# Windows:
+.\venv\Scripts\activate
+```
+
+3. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+### Testing
 
 Run tests with:
 
