@@ -5,6 +5,7 @@ from typing import Callable, Optional
 from slugify import slugify
 from pyfiglet import figlet_format
 from argparse import ArgumentParser
+from rich.console import Console
 from rich.text import Text
 from rich.highlighter import RegexHighlighter
 from textual.app import App, ComposeResult
@@ -72,9 +73,20 @@ theme = Theme(
 )
 banner = figlet_format("RE.NAME", font="smkeyboard")
 
+console = Console()
+
+
+class CustomParser(ArgumentParser):
+    """Custom argument parser."""
+
+    def print_help(self, file=None):
+        console.print(Text(banner, style=theme.primary + " bold"))
+        return super().print_help(file)
+
 
 class RenameApp(App):
     """Main application class."""
+
     CSS_PATH = "styles.tcss"
     BINDINGS = [
         Binding(
@@ -263,6 +275,7 @@ class Form(Widget):
 
 class Preview(Widget):
     """Tree widget for live preview of renaming changes."""
+
     tree: Tree = Tree(directory)
 
     def compose(self):
@@ -296,15 +309,28 @@ class Preview(Widget):
 
 def main():
     """Main entry point of the script."""
+    global directory, pattern, replacement, options
+
     # Parse command-line arguments
-    global directory
     parser = get_argparser()
     args = parser.parse_args()
+
+    # Set global variables
     directory = args.directory
     if not os.path.isdir(directory):
-        print(f"Directory `{directory}` does not exist.")
+        console.print(f"Directory `{directory}` does not exist.", style=theme.error)
         return
 
+    pattern = args.pattern
+    replacement = args.replacement
+    options = {
+        "count": args.count,
+        "regex": args.regex,
+        "case_sensitive": args.case_sensitive,
+        "apply_to": args.apply_to,
+    }
+
+    # Run the app
     app = RenameApp()
     app.run()
 
@@ -499,9 +525,9 @@ def apply_text_operations(text: str) -> str:
     return markup_pattern.sub(transform_match, text)
 
 
-def get_argparser() -> ArgumentParser:
+def get_argparser() -> CustomParser:
     """Parse and return the command-line arguments."""
-    parser = ArgumentParser(
+    parser = CustomParser(
         description="A command-line tool for bulk file renaming and organization using regex.",
     )
 
@@ -509,7 +535,45 @@ def get_argparser() -> ArgumentParser:
         "directory",
         nargs="?",
         default=directory,
-        help="Directory where files are located (default is the current directory).",
+        help=f"Directory where files are located (default is {directory}).",
+    )
+    parser.add_argument(
+        "pattern",
+        nargs="?",
+        default=pattern,
+        help=f"Search pattern for renaming (default is {pattern}).",
+    )
+    parser.add_argument(
+        "replacement",
+        nargs="?",
+        default=replacement,
+        help=f"Replacement string for the pattern (default is {replacement}).",
+    )
+    parser.add_argument(
+        "-c",
+        "--count",
+        type=int,
+        default=options["count"],
+        help=f"Max replacements per file (default is {options['count']}).",
+    )
+    parser.add_argument(
+        "-r",
+        "--regex",
+        action="store_true",
+        default=options["regex"],
+        help=f"Treats the pattern as a regular expression (default is {options['regex']}).",
+    )
+    parser.add_argument(
+        "--case-sensitive",
+        action="store_true",
+        default=options["case_sensitive"],
+        help=f"Make the search case-sensitive (default is {options['case_sensitive']}).",
+    )
+    parser.add_argument(
+        "--apply-to",
+        choices=[option[1] for option in apply_to_options],
+        default=options["apply_to"],
+        help=f"Specifies where the renaming should be applied (default is {options['apply_to']}).",
     )
 
     return parser

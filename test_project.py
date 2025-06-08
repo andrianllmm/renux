@@ -247,9 +247,27 @@ def test_process_date_placeholders(mock_os_functions):
 def test_get_argparser(monkeypatch):
     """
     Test the `get_argparser` function to ensure the command-line arguments
-    are parsed correctly with default values.
+    are parsed correctly.
     """
-    monkeypatch.setattr("sys.argv", ["program.py", "test_dir"])
+    input_args = [
+        "program.py",
+        "test_dir",
+        "test_pattern",
+        "test_replacement",
+        "--count",
+        "3",
+        "--regex",
+        "--case-sensitive",
+        "--apply-to",
+        "ext",
+    ]
+    monkeypatch.setattr("sys.argv", input_args)
 
     args = get_argparser().parse_args()
     assert args.directory == "test_dir"
+    assert args.pattern == "test_pattern"
+    assert args.replacement == "test_replacement"
+    assert args.count == 3
+    assert args.regex is True
+    assert args.case_sensitive is True
+    assert args.apply_to == "ext"
