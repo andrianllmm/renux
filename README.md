@@ -1,24 +1,27 @@
 # re.name
+#### Video Demo: https://youtu.be/4_0eMDcLlBU?si=iAE7UkCUPNln_5gZ
+#### Description: A command-line tool with terminal UI for bulk file renaming and organization using regex.
 
-**A command-line tool with terminal UI for bulk file renaming and organization using regex.**
-
-**[Video Demo](https://www.youtube.com/watch?v=dQw4w9WgXcQ)**
+<div align="center">
+  <img src="readme_preview/demo.gif" alt="Demo" width="720">
+</div>
 
 ## About
 
 `re.name` is a Python CLI tool featuring a terminal user interface (TUI) that automates file renaming. It simplifies bulk renaming with features like regex, placeholders (counter, date), and text transformations, making it ideal for situations such as renaming photos, cleaning up download folders, or enforcing consistent naming conventions.
 
+
 ## Features
 
-- **Regex**: perform advanced renaming with pattern matching, capturing groups, and replacements.
-- **Case sensitivity**: switch between case-sensitive and case-insensitive searches.
-- **Targeted renaming**: rename file names, extensions, or both, offering full control over which parts of a file to modify.
-- **Counter placeholders**: add incremental counters (e.g., file1.txt, file2.txt) with customizable starting points, increments, and padding.
-- **Date placeholders**: include file creation/modification dates or the current date in your filenames with customizable formats.
-- **Text transformations**: apply transformations like slugify, capitalize, reverse, and others.
-- **Safe renaming**: live previews changes, checks for duplicate names, and confirms before applying changes.
-- **Interactive terminal UI**: clear form input fields and file tree view using the `textual` and `rich` library
-- **Keyboard shortcuts**: use hotkeys to quickly apply actions.
+- **Regex**: users can perform advanced renaming with pattern matching, capturing groups, and replacements.
+- **Case sensitivity**: users can switch between case-sensitive and case-insensitive searches.
+- **Targeted renaming**: users can rename file names, extensions, or both, offering full control over which parts of a file to modify.
+- **Counter placeholders**: users can add incremental counters (e.g., file1.txt, file2.txt) with customizable starting points, increments, and padding.
+- **Date placeholders**: users can include file creation/modification dates or the current date in your filenames with customizable formats.
+- **Text transformations**: users can apply transformations like slugify, capitalize, reverse, and others.
+- **Safe renaming**: users can see live previews of changes in the file tree, checks for errors like duplicate names, and double-check before applying changes.
+- **Interactive terminal UI**: users input in form fields and see a file tree view using the `textual` and `rich` library.
+- **Keyboard shortcuts**: users can use intuitive hotkeys to quickly apply actions and navigate the UI.
 
 ## Design Choices
 
