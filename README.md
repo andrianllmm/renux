@@ -98,6 +98,11 @@ Run `python project.py -h` for more details.
 re.name/
 ├── project.py
 ├── test_project.py
+├── constants.py
+├── helpers.py
+├── parser.py
+├── ui.py
+├── bindings.py
 ├── styles.tcss
 ├── requirements.txt
 ├── README.md
@@ -105,6 +110,11 @@ re.name/
 
 - `project.py`: The core script for the renaming logic and TUI interface.
 - `test_project.py`: Unit tests to validate the tool’s functionality.
+- `constants.py`: Global constants for the tool.
+- `helpers.py`: Helper functions for the renaming logic.
+- `parser.py`: Command-line argument parsing.
+- `ui.py`: UI components for the TUI interface.
+- `bindings.py`: Key bindings for the TUI interface.
 - `styles.tcss`: The CSS styles for the TUI interface.
 - `requirements.txt`: Lists all the required Python packages.
 - `README.md`: Project documentation (this file).

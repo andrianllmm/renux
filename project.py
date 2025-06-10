@@ -1,11 +1,6 @@
 import os
 import re
-import datetime
-from typing import Callable, Optional
-from slugify import slugify
-from pyfiglet import figlet_format
-from argparse import ArgumentParser
-from rich.console import Console
+from typing import Optional
 from rich.text import Text
 from rich.highlighter import RegexHighlighter
 from textual.app import App, ComposeResult
@@ -17,93 +12,32 @@ from textual.containers import (
     HorizontalScroll,
     VerticalScroll,
 )
-from textual.theme import Theme
-from textual.binding import Binding
 from textual.validation import Number
 from textual.suggester import SuggestFromList
 
-DEFAULT_OPTIONS = {
-    "count": 0,
-    "regex": True,
-    "case_sensitive": False,
-    "apply_to": "name",
-}
+from constants import DEFAULT_OPTIONS, APPLY_TO_OPTIONS
+from helpers import (
+    apply_text_operations,
+    process_counter_placeholder,
+    process_date_placeholders,
+    get_keywords,
+)
+from parser import get_argparser
+from ui import console, theme, banner
+from bindings import BINDINGS
+
 
 # Global variables
 directory = os.getcwd()
 pattern, replacement = "", ""
 options = DEFAULT_OPTIONS
-apply_to_options = [
-    ("Filename only", "name"),
-    ("Extension only", "ext"),
-    ("Filename + Extension", "both"),
-]
-
-counter_keyword = "counter"
-date_keywords = ["now", "created_at", "modified_at"]
-text_operations: dict[str, Callable[[str], str]] = {
-    "slugify": slugify,
-    "upper": str.upper,
-    "lower": str.lower,
-    "title": str.title,
-    "capitalize": str.capitalize,
-    "swapcase": str.swapcase,
-    "reverse": lambda s: s[::-1],
-    "strip": str.strip,
-    "len": lambda s: str(len(s)),
-}
-
-theme = Theme(
-    name="gruvbox",
-    primary="#85A598",
-    secondary="#A89A85",
-    warning="#fabd2f",
-    error="#fb4934",
-    success="#b8bb26",
-    accent="#fabd2f",
-    foreground="#fbf1c7",
-    background="#282828",
-    surface="#3c3836",
-    panel="#504945",
-    dark=True,
-    variables={
-        "block-cursor-foreground": "#fbf1c7",
-        "input-selection-background": "#689d6a40",
-    },
-)
-banner = figlet_format("RE.NAME", font="smkeyboard")
-
-console = Console()
-
-
-class CustomParser(ArgumentParser):
-    """Custom argument parser."""
-
-    def print_help(self, file=None):
-        console.print(Text(banner, style=theme.primary + " bold"))
-        return super().print_help(file)
 
 
 class RenameApp(App):
     """Main application class."""
 
     CSS_PATH = "styles.tcss"
-    BINDINGS = [
-        Binding(
-            "ctrl+q",
-            "quit",
-            "Quit",
-            priority=True,
-            tooltip="Exit the app",
-        ),
-        Binding("ctrl+s", "save", "Save", priority=True, tooltip="Apply renaming"),
-        Binding(
-            "ctrl+l", "clear_form", "Clear", priority=True, tooltip="Clear form values"
-        ),
-        Binding(
-            "ctrl+r", "toggle_regex", "Regex", priority=True, tooltip="Toggle regex"
-        ),
-    ]
+    BINDINGS = BINDINGS
 
     def on_mount(self) -> None:
         self.register_theme(theme)
@@ -147,8 +81,14 @@ class RenameApp(App):
         self.query_one("#regex", Checkbox).toggle()
 
     def action_clear_form(self) -> None:
-        for option in DEFAULT_OPTIONS:
-            self.query_one(f"#{option}").value = DEFAULT_OPTIONS[option]
+        self.query_one("#pattern", Input).value = ""
+        self.query_one("#replacement", Input).value = ""
+        self.query_one("#count", Input).value = str(DEFAULT_OPTIONS["count"])
+        self.query_one("#regex", Checkbox).value = DEFAULT_OPTIONS["regex"]
+        self.query_one("#case_sensitive", Checkbox).value = DEFAULT_OPTIONS[
+            "case_sensitive"
+        ]
+        self.query_one("#apply_to", Select).value = DEFAULT_OPTIONS["apply_to"]
 
     def action_save(self) -> None:
         files = [entry.name for entry in os.scandir(directory) if entry.is_file()]
@@ -156,7 +96,8 @@ class RenameApp(App):
             apply_renames(
                 directory, get_renames(files, directory, pattern, replacement, options)
             )
-            self.action_clear_form()
+            self.query_one("#pattern", Input).value = ""
+            self.query_one("#replacement", Input).value = ""
             self.query_one("#pattern", Input).focus()
             self.show_message("Changes applied successfully.", "success")
         except Exception as e:
@@ -172,28 +113,7 @@ class Form(Widget):
 
         # Initialize keywords
         self.files = [entry.name for entry in os.scandir(directory) if entry.is_file()]
-
-        self.text_operations_keywords = [f"|{key}" for key in text_operations.keys()]
-        self.counter_keywords = [
-            f"{{{counter_keyword}}}",
-            f"{{{counter_keyword}(1,1,0)}}",
-            f"{{{counter_keyword}(0,1,0)}}",
-        ]
-        date_formats = [
-            "",
-            "(%Y)",
-            "(%Y-%m-%d)",
-            "(%Y-%m-%d %H:%M:%S)",
-            "(%d-%m-%Y)",
-            "(%m-%d-%Y)",
-        ]
-        base_date_keywords = ["now", "created_at", "modified_at"]
-        self.date_keywords = [
-            f"{{{key}{fmt}}}" for key in base_date_keywords for fmt in date_formats
-        ]
-        self.keywords = (
-            self.counter_keywords + self.date_keywords + self.text_operations_keywords
-        )
+        self.keywords = get_keywords()
 
     def compose(self):
         yield Input(
@@ -220,7 +140,7 @@ class Form(Widget):
             yield Label("Max replacements: ")
             yield Input(
                 id="count",
-                value=str(options["count"]),
+                value=str(options.get("count", 0)),
                 placeholder="0 for unlimited",
                 compact=True,
                 type="integer",
@@ -245,7 +165,7 @@ class Form(Widget):
         yield Select(
             id="apply_to",
             value=options["apply_to"],
-            options=apply_to_options,
+            options=APPLY_TO_OPTIONS,
             compact=True,
         )
 
@@ -258,7 +178,7 @@ class Form(Widget):
         elif input_id == "replacement":
             replacement = value
         elif input_id == "count":
-            options["count"] = int(value) if value.isdigit() else 0
+            options["count"] = int(value or "0")
 
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
         global options
@@ -312,8 +232,9 @@ def main():
     global directory, pattern, replacement, options
 
     # Parse command-line arguments
-    parser = get_argparser()
-    args = parser.parse_args()
+    args = get_argparser(
+        directory=directory, pattern=pattern, replacement=replacement, options=options
+    ).parse_args()
 
     # Set global variables
     directory = args.directory
@@ -457,126 +378,6 @@ def get_rename(
     new_name = apply_text_operations(new_name)
 
     return new_name
-
-
-def process_counter_placeholder(replacement: str, counters: list[int]) -> str:
-    """Replace counter placeholders in the replacement string."""
-    # Pattern to match counter markup like {counter(start, step, padding)}
-    counter_pattern = re.compile(r"\{counter(?:\((\d+)?,?\s*(\d+)?,?\s*(\d+)?\))?\}")
-
-    # Replace each placeholder with the appropriate counter value
-    def replace_counter(match: re.Match, i: int) -> str:
-        step = int(match.group(2) or 1)
-        padding = int(match.group(3) or 1)
-
-        # Get the current counter, formatted with the appropriate padding
-        formatted_counter = str(counters[i]).zfill(padding)
-
-        # Increment the counter for the next placeholder
-        counters[i] += step
-
-        return formatted_counter
-
-    # Go over the matches and process each one with its index
-    for i, match in enumerate(counter_pattern.finditer(replacement)):
-        replacement = replacement.replace(match.group(0), replace_counter(match, i), 1)
-
-    return replacement
-
-
-def process_date_placeholders(replacement: str, file_name: str, directory: str) -> str:
-    """Replace date-related placeholders with actual formatted dates."""
-    file_path = os.path.join(directory, file_name)
-
-    # Pattern to match date markup like {now(%Y-%m-%d)}
-    date_pattern = re.compile(r"\{(now|created_at|modified_at)(?:\((.+)\))?\}")
-
-    def replace_date(match):
-        date_type = match.group(1) or ""
-        date_format = match.group(2) or "%Y-%m-%d"
-
-        # Get the corresponding date
-        if date_type == "now":
-            return datetime.datetime.now().strftime(date_format)
-        elif date_type == "created_at":
-            created_time = os.path.getctime(file_path)
-            return datetime.datetime.fromtimestamp(created_time).strftime(date_format)
-        elif date_type == "modified_at":
-            modified_time = os.path.getmtime(file_path)
-            return datetime.datetime.fromtimestamp(modified_time).strftime(date_format)
-
-    # Replace all date-related placeholders with actual dates
-    return date_pattern.sub(replace_date, replacement)
-
-
-def apply_text_operations(text: str) -> str:
-    """Apply case transformations using markup like {<group>|<operation>}."""
-    # Pattern to match markup like {<group>|<operation>}
-    markup_pattern = re.compile(r"\{([^|]+)\|([^\}]+)\}")
-
-    def transform_match(match: re.Match) -> str:
-        group = match.group(1)  # The group reference (e.g., \1)
-        operation_type = match.group(2)  # The operation to apply (e.g., slugify)
-
-        operation = text_operations.get(operation_type, lambda s: s)
-        return operation(group)
-
-    # Replace all transformations in the text
-    return markup_pattern.sub(transform_match, text)
-
-
-def get_argparser() -> CustomParser:
-    """Parse and return the command-line arguments."""
-    parser = CustomParser(
-        description="A command-line tool for bulk file renaming and organization using regex.",
-    )
-
-    parser.add_argument(
-        "directory",
-        nargs="?",
-        default=directory,
-        help=f"Directory where files are located (default is {directory}).",
-    )
-    parser.add_argument(
-        "pattern",
-        nargs="?",
-        default=pattern,
-        help=f"Search pattern for renaming (default is {pattern}).",
-    )
-    parser.add_argument(
-        "replacement",
-        nargs="?",
-        default=replacement,
-        help=f"Replacement string for the pattern (default is {replacement}).",
-    )
-    parser.add_argument(
-        "-c",
-        "--count",
-        type=int,
-        default=options["count"],
-        help=f"Max replacements per file (default is {options['count']}).",
-    )
-    parser.add_argument(
-        "-r",
-        "--regex",
-        action="store_true",
-        default=options["regex"],
-        help=f"Treats the pattern as a regular expression (default is {options['regex']}).",
-    )
-    parser.add_argument(
-        "--case-sensitive",
-        action="store_true",
-        default=options["case_sensitive"],
-        help=f"Make the search case-sensitive (default is {options['case_sensitive']}).",
-    )
-    parser.add_argument(
-        "--apply-to",
-        choices=[option[1] for option in apply_to_options],
-        default=options["apply_to"],
-        help=f"Specifies where the renaming should be applied (default is {options['apply_to']}).",
-    )
-
-    return parser
 
 
 if __name__ == "__main__":

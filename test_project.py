@@ -6,11 +6,13 @@ from project import (
     apply_renames,
     get_renames,
     get_rename,
+)
+from helpers import (
     apply_text_operations,
     process_counter_placeholder,
     process_date_placeholders,
-    get_argparser,
 )
+from parser import get_argparser
 
 
 @pytest.fixture
@@ -249,25 +251,41 @@ def test_get_argparser(monkeypatch):
     Test the `get_argparser` function to ensure the command-line arguments
     are parsed correctly.
     """
+    directory = "test_dir"
+    pattern = "test_pattern"
+    replacement = "test_replacement"
+    options = {
+        "count": 3,
+        "regex": True,
+        "case_sensitive": True,
+        "apply_to": "ext",
+    }
+
     input_args = [
-        "program.py",
-        "test_dir",
-        "test_pattern",
-        "test_replacement",
+        "project.py",
+        directory,
+        pattern,
+        replacement,
         "--count",
-        "3",
-        "--regex",
-        "--case-sensitive",
+        str(options["count"]),
         "--apply-to",
-        "ext",
+        options["apply_to"],
     ]
+    if options["regex"]:
+        input_args.append("--regex")
+    if options["case_sensitive"]:
+        input_args.append("--case-sensitive")
+
     monkeypatch.setattr("sys.argv", input_args)
 
-    args = get_argparser().parse_args()
-    assert args.directory == "test_dir"
-    assert args.pattern == "test_pattern"
-    assert args.replacement == "test_replacement"
-    assert args.count == 3
-    assert args.regex is True
-    assert args.case_sensitive is True
-    assert args.apply_to == "ext"
+    args = get_argparser(
+        directory=directory, pattern=pattern, replacement=replacement, options=options
+    ).parse_args()
+
+    assert args.directory == directory
+    assert args.pattern == pattern
+    assert args.replacement == replacement
+    assert args.count == options["count"]
+    assert args.regex == options["regex"]
+    assert args.case_sensitive == options["case_sensitive"]
+    assert args.apply_to == options["apply_to"]
