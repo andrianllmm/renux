@@ -11,6 +11,7 @@ from renux.renamer import apply_renames, get_renames
 from renux.components import Form, Preview
 from renux.ui import CSS_PATH, THEME
 from renux.bindings import BINDINGS
+from renux.backup import load_backup, save_backup
 from renux.constants import DEFAULT_OPTIONS
 from renux.helpers import get_files
 
@@ -35,8 +36,7 @@ class RenameApp(App):
 
         super().__init__(*args, **kwargs)
 
-        self.undo_stack: list[list[tuple[str, str]]] = []
-        self.redo_stack: list[list[tuple[str, str]]] = []
+        self.undo_stack, self.redo_stack = load_backup(directory)
 
         self.directory = directory
         self.pattern = pattern
@@ -119,6 +119,8 @@ class RenameApp(App):
         except Exception as e:
             self.show_message(str(e))
 
+        save_backup(self.directory, self.undo_stack, self.redo_stack)
+
         self.query_one(Preview).update_preview()
 
     def action_undo(self) -> None:
@@ -135,6 +137,8 @@ class RenameApp(App):
             self.show_message("Undo successful.", "success")
         except Exception as e:
             self.show_message(f"Undo failed: {e}", "error")
+
+        save_backup(self.directory, self.undo_stack, self.redo_stack)
 
         self.files = get_files(self.directory)
         self.disabled_files.clear()
@@ -153,6 +157,8 @@ class RenameApp(App):
             self.show_message("Redo successful.", "success")
         except Exception as e:
             self.show_message(f"Redo failed: {e}", "error")
+
+        save_backup(self.directory, self.undo_stack, self.redo_stack)
 
         self.files = get_files(self.directory)
         self.disabled_files.clear()
