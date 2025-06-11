@@ -24,4 +24,4 @@ theme = Theme(
 
 console = Console()
 
-banner = figlet_format("RE.NAME", font="smkeyboard")
+banner = figlet_format("RENUX", font="smkeyboard")

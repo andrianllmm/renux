@@ -1,33 +1,23 @@
-# re.name
-#### Video Demo: https://youtu.be/4_0eMDcLlBU?si=iAE7UkCUPNln_5gZ
-#### Description: A command-line tool with terminal UI for bulk file renaming and organization using regex.
-
-<div align="center">
-  <img src="readme_preview/demo.gif" alt="Demo" width="720">
-</div>
+# renux
+**Bulk file renaming with a terminal UI.**
 
 ## About
 
-`re.name` is a Python CLI tool featuring a terminal user interface (TUI) that automates file renaming. It simplifies bulk renaming with features like regex, placeholders (counter, date), and text transformations, making it ideal for situations such as renaming photos, cleaning up download folders, or enforcing consistent naming conventions.
+`renux` is a tool with terminal user interface (TUI) that automates file renaming. It simplifies this task with features like regex, placeholders (counter, date), and text transformations, making it ideal for situations such as renaming photos, cleaning up download folders, or enforcing consistent naming conventions.
 
 
 ## Features
 
-- **Regex**: users can perform advanced renaming with pattern matching, capturing groups, and replacements.
-- **Case sensitivity**: users can switch between case-sensitive and case-insensitive searches.
-- **Targeted renaming**: users can rename file names, extensions, or both, offering full control over which parts of a file to modify.
-- **Counter placeholders**: users can add incremental counters (e.g., file1.txt, file2.txt) with customizable starting points, increments, and padding.
-- **Date placeholders**: users can include file creation/modification dates or the current date in your filenames with customizable formats.
-- **Text transformations**: users can apply transformations like slugify, capitalize, reverse, and others.
-- **Safe renaming**: users can see live previews of changes in the file tree, checks for errors like duplicate names, and double-check before applying changes.
-- **Interactive terminal UI**: users input in form fields and see a file tree view using the `textual` and `rich` library.
-- **Keyboard shortcuts**: users can use intuitive hotkeys to quickly apply actions and navigate the UI.
+- **Regex**: perform advanced renaming with pattern matching, capturing groups, and replacements.
+- **Case sensitivity**: switch between case-sensitive and case-insensitive searches.
+- **Targeted renaming**: rename file names, extensions, or both, offering full control over which parts of a file to modify.
+- **Counter placeholders**: add incremental counters (e.g., file1.txt, file2.txt) with customizable starting points, increments, and padding.
+- **Date placeholders**: include file creation/modification dates or the current date in your filenames with customizable formats.
+- **Text transformations**: apply transformations like slugify, capitalize, reverse, and others.
+- **Safe renaming**: see live previews of changes in the file tree, checks for errors like duplicate names, and double-check before applying changes.
+- **Interactive terminal UI**: input in form fields and see a file tree view using the `textual` and `rich` library.
+- **Keyboard shortcuts**: use intuitive hotkeys to quickly apply actions and navigate the UI.
 
-## Design Choices
-
-- **Regex vs Glob**: uses regex for file renaming instead of simpler globbing (wildcards like `*` and `?`). Regex allow for complex and precise pattern matching and substitution, such as matching specific parts of filenames, capturing groups, and applying transformations based on conditions.
-- **CLI/TUI vs GUI**: follows a command-line interface (CLI) and terminal user interface (TUI) approach instead of a graphical user interface (GUI). Using the terminal allow for faster bulk operations by just using the keyboard once familiarized.
-- **Use of Textual library**: uses the `textual` library for the TUI interface, which provides a rich and interactive user interface. The library allows for easy customization without the need for extensive code.
 
 ## Usage
 
@@ -95,50 +85,16 @@ Run `python project.py -h` for more details.
   python project.py my_files "(.*)" "{filename|slugify}" -r
   ```
 
-## File Structure
-
-```
-re.name/
-├── project.py
-├── test_project.py
-├── constants.py
-├── helpers.py
-├── parser.py
-├── ui.py
-├── bindings.py
-├── styles.tcss
-├── requirements.txt
-├── README.md
-```
-
-- `project.py`: The core script for the renaming logic and TUI interface.
-- `test_project.py`: Unit tests to validate the tool’s functionality.
-- `constants.py`: Global constants for the tool.
-- `helpers.py`: Helper functions for the renaming logic.
-- `parser.py`: Command-line argument parsing.
-- `ui.py`: UI components for the TUI interface.
-- `bindings.py`: Key bindings for the TUI interface.
-- `styles.tcss`: The CSS styles for the TUI interface.
-- `requirements.txt`: Lists all the required Python packages.
-- `README.md`: Project documentation (this file).
 
 ## Development
-
-### Tech Stack
-
-- **Python**
-- **Textual**: TUI library for building interactive terminal applications.
-- **Rich**: Library for rich text and formatting in terminal applications.
-- **argparse**: Library for parsing command-line arguments.
-- **pytest**: Testing framework for unit tests.
 
 ### Setup
 
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/andrianllmm/re.name.git
-cd re.name
+git clone https://github.com/andrianllmm/renux.git
+cd renux
 ```
 
 2. Create and activate virtual environment:
