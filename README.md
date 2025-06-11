@@ -1,6 +1,18 @@
-# renux
+<div align="center">
+  <h1>renux</h1>
+</div>
 
-**Bulk file renaming with a terminal UI**
+<div align="center">
+  <strong>Bulk file renaming with a terminal UI</strong>
+</div>
+
+###
+
+<div align="center">
+  <img src="readme_preview/demo.gif" alt="Preview" width="720">
+</div>
+
+###
 
 ## About
 
