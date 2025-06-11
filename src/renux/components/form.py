@@ -8,7 +8,7 @@ from textual.suggester import SuggestFromList
 from textual.containers import Horizontal
 
 from renux.constants import APPLY_TO_OPTIONS
-from renux.helpers import get_keywords
+from renux.helpers.keywords import get_keywords
 
 if TYPE_CHECKING:
     from renux.app import RenameApp

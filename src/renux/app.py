@@ -13,7 +13,7 @@ from renux.ui import CSS_PATH, THEME
 from renux.bindings import BINDINGS
 from renux.backup import load_backup, save_backup
 from renux.constants import DEFAULT_OPTIONS
-from renux.helpers import get_files
+from renux.helpers.files import get_files
 
 
 class RenameApp(App):

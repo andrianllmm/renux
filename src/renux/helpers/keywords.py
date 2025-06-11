@@ -1,23 +1,9 @@
-import os
-
 from renux.constants import (
     TEXT_OPERATIONS,
     COUNTER_KEYWORD,
     DATE_KEYWORDS,
     DATE_FORMATS,
 )
-
-
-def get_files(directory: str) -> list[str]:
-    """Get all files in the directory, sorted alphabetically (case-insensitive)."""
-    return sorted(
-        [
-            entry.name
-            for entry in os.scandir(directory)
-            if entry.is_file() and entry.name
-        ],
-        key=lambda name: name.lower(),
-    )
 
 
 def get_keywords() -> list[str]:
