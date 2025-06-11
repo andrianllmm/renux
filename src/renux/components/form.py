@@ -19,13 +19,6 @@ class Form(Widget):
 
     app: "RenameApp"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.files = [
-            entry.name for entry in os.scandir(self.app.directory) if entry.is_file()
-        ]
-        self.keywords = get_keywords()
-
     def compose(self):
         yield Input(
             id="pattern",
@@ -33,14 +26,16 @@ class Form(Widget):
             placeholder="Search for",
             compact=True,
             highlighter=RegexHighlighter(),
-            suggester=SuggestFromList(self.files, case_sensitive=False),
+            suggester=SuggestFromList(self.app.files, case_sensitive=False),
         )
         yield Input(
             id="replacement",
             value=self.app.replacement,
             placeholder="Replace with",
             compact=True,
-            suggester=SuggestFromList(self.files + self.keywords, case_sensitive=False),
+            suggester=SuggestFromList(
+                self.app.files + get_keywords(), case_sensitive=False
+            ),
             classes="mb",
         )
 

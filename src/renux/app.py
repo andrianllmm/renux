@@ -39,6 +39,9 @@ class RenameApp(App):
         self.replacement = replacement or ""
         self.options = options or DEFAULT_OPTIONS.copy()
 
+        self.files = [entry.name for entry in os.scandir(directory) if entry.is_file()]
+        self.disabled_files = []
+
     def on_mount(self) -> None:
         self.register_theme(THEME)
         self.theme = "gruvbox"
@@ -93,7 +96,7 @@ class RenameApp(App):
         self.query_one("#apply_to", Select).value = DEFAULT_OPTIONS["apply_to"]
 
     def action_save(self) -> None:
-        files = [entry.name for entry in os.scandir(self.directory) if entry.is_file()]
+        files = [file for file in self.files if file not in self.disabled_files]
         try:
             renames = get_renames(
                 files, self.directory, self.pattern, self.replacement, self.options
@@ -101,12 +104,18 @@ class RenameApp(App):
             self.rename_history.append([(new, old) for old, new in renames])
             apply_renames(self.directory, renames)
 
+            self.files = [
+                entry.name for entry in os.scandir(self.directory) if entry.is_file()
+            ]
+            self.disabled_files = []
+
             self.query_one("#pattern", Input).value = ""
             self.query_one("#replacement", Input).value = ""
             self.query_one("#pattern", Input).focus()
             self.show_message("Changes applied successfully.", "success")
         except Exception as e:
             self.show_message(str(e))
+
         self.query_one(Preview).update_preview()
 
     def action_undo(self) -> None:

@@ -1,4 +1,3 @@
-import os
 from typing import TYPE_CHECKING
 from rich.text import Text
 from textual.widget import Widget
@@ -27,11 +26,9 @@ class Preview(Widget):
 
     def update_preview(self) -> None:
         # Get files and their renaming results
-        files = [
-            entry.name for entry in os.scandir(self.app.directory) if entry.is_file()
-        ]
+
         renames = get_renames(
-            files,
+            self.app.files,
             self.app.directory,
             self.app.pattern,
             self.app.replacement,
@@ -40,13 +37,22 @@ class Preview(Widget):
 
         self._tree.root.remove_children()
         for old, new in renames:
+            disabled = old in self.app.disabled_files
+            text = Text()
+            text.append(
+                "▢ " if disabled else "▣ ", "dim" if disabled else THEME.primary
+            )
+            text.append(old, "dim" if disabled else THEME.foreground)
             if old != new:
-                text = Text.assemble(
-                    (old, "dim"),
-                    (" → ", str(THEME.foreground)),
-                    (new, str(THEME.primary)),
-                )
-            else:
-                text = Text(old, style="dim")
-            self._tree.root.add(text)
-        self._tree.refresh()
+                text.append(" → ", "dim bold"),
+                text.append(new, str("dim" if disabled else THEME.primary) + " bold"),
+
+            self._tree.root.add_leaf(text, data=old)
+
+    def on_tree_node_selected(self, event: Tree.NodeSelected) -> None:
+        file_name = event.node.data
+        if file_name in self.app.disabled_files:
+            self.app.disabled_files.remove(file_name)
+        else:
+            self.app.disabled_files.append(file_name)
+        self.update_preview()
