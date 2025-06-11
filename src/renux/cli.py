@@ -1,4 +1,5 @@
 import os
+
 from renux.app import RenameApp
 from renux.ui import THEME, CONSOLE
 from renux.parser import parse_args

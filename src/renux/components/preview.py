@@ -50,7 +50,9 @@ class Preview(Widget):
             self._tree.root.add_leaf(text, data=old)
 
     def on_tree_node_selected(self, event: Tree.NodeSelected) -> None:
-        file_name = event.node.data
+        if event.node is None or event.node.data is None:
+            return
+        file_name: str = event.node.data
         if file_name in self.app.disabled_files:
             self.app.disabled_files.remove(file_name)
         else:

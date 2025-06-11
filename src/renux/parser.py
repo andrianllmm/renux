@@ -2,8 +2,8 @@ import os
 from argparse import ArgumentParser, Namespace
 from rich.text import Text
 
-from renux.constants import DEFAULT_OPTIONS, APPLY_TO_OPTIONS
 from renux.ui import CONSOLE, THEME, BANNER
+from renux.constants import DEFAULT_OPTIONS, APPLY_TO_OPTIONS
 
 
 class CustomParser(ArgumentParser):

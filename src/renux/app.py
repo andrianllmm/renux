@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 from textual.app import App, ComposeResult
 from textual.widgets import Footer, Label, Input, Checkbox, Select
 from textual.containers import (
@@ -8,11 +7,12 @@ from textual.containers import (
     VerticalScroll,
 )
 
-from renux.components import Form, Preview
 from renux.renamer import apply_renames, get_renames
-from renux.constants import DEFAULT_OPTIONS
+from renux.components import Form, Preview
 from renux.ui import CSS_PATH, THEME
 from renux.bindings import BINDINGS
+from renux.constants import DEFAULT_OPTIONS
+from renux.helpers import get_files
 
 
 class RenameApp(App):
@@ -23,24 +23,28 @@ class RenameApp(App):
 
     def __init__(
         self,
-        directory: Optional[str],
-        pattern: Optional[str],
-        replacement: Optional[str],
-        options: Optional[dict],
+        directory: str = os.getcwd(),
+        pattern: str = "",
+        replacement: str = "",
+        options: dict[str, str | int | bool] = DEFAULT_OPTIONS.copy(),
         *args,
         **kwargs,
     ):
+        if directory is None:
+            raise ValueError("Both directory must be provided.")
+
         super().__init__(*args, **kwargs)
-        self.rename_history = []
-        self.redo_stack = []
 
-        self.directory = directory or os.getcwd()
-        self.pattern = pattern or ""
-        self.replacement = replacement or ""
-        self.options = options or DEFAULT_OPTIONS.copy()
+        self.undo_stack: list[list[tuple[str, str]]] = []
+        self.redo_stack: list[list[tuple[str, str]]] = []
 
-        self.files = [entry.name for entry in os.scandir(directory) if entry.is_file()]
-        self.disabled_files = []
+        self.directory = directory
+        self.pattern = pattern
+        self.replacement = replacement
+        self.options = options
+
+        self.files = get_files(directory)
+        self.disabled_files: list[str] = []
 
     def on_mount(self) -> None:
         self.register_theme(THEME)
@@ -85,7 +89,7 @@ class RenameApp(App):
     def action_clear_form(self) -> None:
         self.pattern = ""
         self.replacement = ""
-        self.options = DEFAULT_OPTIONS
+        self.options = DEFAULT_OPTIONS.copy()
         self.query_one("#pattern", Input).value = ""
         self.query_one("#replacement", Input).value = ""
         self.query_one("#count", Input).value = str(DEFAULT_OPTIONS["count"])
@@ -101,13 +105,12 @@ class RenameApp(App):
             renames = get_renames(
                 files, self.directory, self.pattern, self.replacement, self.options
             )
-            self.rename_history.append([(new, old) for old, new in renames])
+            self.undo_stack.append(renames)
             apply_renames(self.directory, renames)
 
-            self.files = [
-                entry.name for entry in os.scandir(self.directory) if entry.is_file()
-            ]
-            self.disabled_files = []
+            self.files = get_files(self.directory)
+            self.disabled_files.clear()
+            self.redo_stack.clear()
 
             self.query_one("#pattern", Input).value = ""
             self.query_one("#replacement", Input).value = ""
@@ -119,19 +122,22 @@ class RenameApp(App):
         self.query_one(Preview).update_preview()
 
     def action_undo(self) -> None:
-        if not self.rename_history:
+        if not self.undo_stack:
             self.show_message("Nothing to undo.", "error")
             return
 
-        last_renames = self.rename_history.pop()
+        last_renames = self.undo_stack.pop()
 
         try:
-            apply_renames(self.directory, last_renames)
-            self.redo_stack.append([(old, new) for new, old in last_renames])
+            reversed_renames = [(new, old) for old, new in last_renames]
+            apply_renames(self.directory, reversed_renames)
+            self.redo_stack.append(last_renames)
             self.show_message("Undo successful.", "success")
         except Exception as e:
             self.show_message(f"Undo failed: {e}", "error")
 
+        self.files = get_files(self.directory)
+        self.disabled_files.clear()
         self.query_one(Preview).update_preview()
 
     def action_redo(self) -> None:
@@ -143,9 +149,11 @@ class RenameApp(App):
 
         try:
             apply_renames(self.directory, renames)
-            self.rename_history.append([(new, old) for old, new in renames])
+            self.undo_stack.append(renames)
             self.show_message("Redo successful.", "success")
         except Exception as e:
             self.show_message(f"Redo failed: {e}", "error")
 
+        self.files = get_files(self.directory)
+        self.disabled_files.clear()
         self.query_one(Preview).update_preview()
