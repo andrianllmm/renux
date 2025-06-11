@@ -1,10 +1,10 @@
 # renux
+
 **Bulk file renaming with a terminal UI**
 
 ## About
 
 `renux` is a tool with terminal user interface (TUI) that automates file renaming. It simplifies this task with features like regex, placeholders, and text transformations, making it ideal for situations such as renaming photos, cleaning up download folders, or enforcing consistent naming conventions.
-
 
 ## Features
 
@@ -16,11 +16,18 @@
 - **File exclusion**: exclude files from renaming.
 - **Keyboard shortcuts**: use hotkeys to quickly apply actions and navigate the UI.
 
-
 ## Installation
+
+Using [pipx](https://pipx.pypa.io/stable/)
 
 ```bash
 pipx install renux
+```
+
+Alternatively, using [pip](https://pip.pypa.io/en/stable/)
+
+```bash
+pip install renux
 ```
 
 ## Usage
@@ -46,6 +53,7 @@ renux [directory] [pattern] [replacement]
 **Markup**
 
 - **Text transformations**: `{string|operation}`
+
   - `slugify`: Convert into a URL/filename-friendly format (e.g., "hello world" -> "hello-world")
   - `lower`: Convert to lowercase
   - `upper`: Convert to uppercase
@@ -102,7 +110,6 @@ Run `python project.py -h` for more details.
   ```bash
   python project.py my_files "(.*)" "{filename|slugify}" -r
   ```
-
 
 ## Development
 
