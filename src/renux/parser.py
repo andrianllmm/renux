@@ -30,13 +30,13 @@ def parse_args() -> Namespace:
         "pattern",
         nargs="?",
         default="",
-        help=f"Search pattern for renaming (default is " ").",
+        help=f"Search pattern for renaming (default is '').",
     )
     parser.add_argument(
         "replacement",
         nargs="?",
         default="",
-        help=f"Replacement string for the pattern (default is " ").",
+        help=f"Replacement string for the pattern (default is '').",
     )
     parser.add_argument(
         "-c",

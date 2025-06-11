@@ -1,39 +1,43 @@
 # renux
-**Bulk file renaming with a terminal UI.**
+**Bulk file renaming with a terminal UI**
 
 ## About
 
-`renux` is a tool with terminal user interface (TUI) that automates file renaming. It simplifies this task with features like regex, placeholders (counter, date), and text transformations, making it ideal for situations such as renaming photos, cleaning up download folders, or enforcing consistent naming conventions.
+`renux` is a tool with terminal user interface (TUI) that automates file renaming. It simplifies this task with features like regex, placeholders, and text transformations, making it ideal for situations such as renaming photos, cleaning up download folders, or enforcing consistent naming conventions.
 
 
 ## Features
 
 - **Regex**: perform advanced renaming with pattern matching, capturing groups, and replacements.
-- **Case sensitivity**: switch between case-sensitive and case-insensitive searches.
-- **Targeted renaming**: rename file names, extensions, or both, offering full control over which parts of a file to modify.
+- **Text transformations**: apply text transformations like slugify, camelCase to snake_case, and more.
 - **Counter placeholders**: add incremental counters (e.g., file1.txt, file2.txt) with customizable starting points, increments, and padding.
-- **Date placeholders**: include file creation/modification dates or the current date in your filenames with customizable formats.
-- **Text transformations**: apply transformations like slugify, capitalize, reverse, and others.
-- **Safe renaming**: see live previews of changes in the file tree, checks for errors like duplicate names, and double-check before applying changes.
-- **Interactive terminal UI**: input in form fields and see a file tree view using the `textual` and `rich` library.
-- **Keyboard shortcuts**: use intuitive hotkeys to quickly apply actions and navigate the UI.
+- **Date placeholders**: include file creation/modification dates or the current date in filenames with customizable formats.
+- **Backup and undo/redo**: save and restore changes to your files.
+- **File exclusion**: exclude files from renaming.
+- **Keyboard shortcuts**: use hotkeys to quickly apply actions and navigate the UI.
 
+
+## Installation
+
+```bash
+pipx install renux
+```
 
 ## Usage
 
 ```bash
-python project.py [directory] pattern replacement
+renux [directory] [pattern] [replacement]
 ```
 
-- `[directory]` is where files are located (default is the current directory).
-- `pattern` is the search pattern, which can be a regular expression.
-- `replacement` is the replacement string for the pattern.
+- `[directory]`: Directory where files are located (default is the current directory).
+- `pattern`: Search pattern, which can be a regular expression (default is '').
+- `replacement`: Replacement string for the pattern (default is '').
 
 **Options**
 
 - `-c`, `--count`: Max replacements per file (default is 0, meaning unlimited).
-- `-s`, `--case-sensitive`: Makes the search case-sensitive (default is false).
-- `-r`, `--regex`: Treats the pattern as a regular expression (default is false).
+- `-r`, `--regex`: Treats the pattern as a regular expression (default is False).
+- `-s`, `--case-sensitive`: Makes the search case-sensitive (default is False).
 - `--apply-to`: Specifies where the renaming should be applied. Options are:
   - `name`: Rename the file's base name (default).
   - `ext`: Rename the file's extension.
@@ -41,15 +45,29 @@ python project.py [directory] pattern replacement
 
 **Markup**
 
-- **Text transformations**: `{string|operation}`, e.g. `{hello, world|slugify}` would turn into a slugified version like `hello-world`
-- **Counter**: `{counter(start=1,step=1,padding=1)}`, .e.g. `{counter(1,2,3)}` will generate a sequence like `001`, `003`, `005`, etc.
-- **Dates**: `{now|created_at|modified_at(<format>)}`, e.g. `{now(%Y)}` will replace it with the current year like 2025.
+- **Text transformations**: `{string|operation}`
+  - `slugify`: Convert into a URL/filename-friendly format (e.g., "hello world" -> "hello-world")
+  - `lower`: Convert to lowercase
+  - `upper`: Convert to uppercase
+  - `caps`: Capitalize the first letter
+  - `title`: Capitalize each word
+  - `camel`: Convert to camel case (e.g., "hello world" -> "helloWorld")
+  - `pascal`: Convert to pascal case (e.g., "hello world" -> "HelloWorld")
+  - `snake`: Convert to snake case (e.g., "hello world" -> "hello_world")
+  - `kebab`: Convert to kebab case (e.g., "hello world" -> "hello-world")
+  - `swapcase`: Swap the case (e.g., "Hello World" -> "hELLO wORLD")
+  - `reverse`: Reverse the string (e.g., "Hello World" -> "dlroW olleH")
+  - `strip`: Remove leading and trailing whitespace
+  - `len`: Get the length of the string
+
+- **Counter**: `{counter(start=1,step=1,padding=1)}`, .e.g. `{counter(1,2,3)}` will generate a sequence like `001`, `003`, `005`, ...
+- **Dates**: `{now|created_at|modified_at(<format>)}`, e.g. `{now(%Y)}` will replace it with the current year
 
 Run `python project.py -h` for more details.
 
 ## Examples
 
-- Rename files starting with "IMG*" to "Image*":
+- Rename files starting with "IMG" to "Image":
 
   ```bash
   python project.py my_photos/ IMG_ Image_
