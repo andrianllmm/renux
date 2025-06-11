@@ -11,7 +11,7 @@ from textual.containers import (
 from renux.components import Form, Preview
 from renux.renamer import apply_renames, get_renames
 from renux.constants import DEFAULT_OPTIONS
-from renux.ui import CSS_PATH, THEME, BANNER
+from renux.ui import CSS_PATH, THEME
 from renux.bindings import BINDINGS
 
 
@@ -49,15 +49,14 @@ class RenameApp(App):
         yield Footer()
         with HorizontalScroll():
             # Form column
-            with VerticalScroll():
-                yield Container(Label(BANNER), id="banner")
+            with VerticalScroll(id="form-column"):
                 yield Container(
                     Label(id="message"),
                     classes="align-center",
                 )
                 yield Form(id="form")
             # Preview column
-            with VerticalScroll():
+            with VerticalScroll(id="preview-column"):
                 yield Preview(id="preview")
 
     def show_message(self, message: str, status: str = "error") -> None:

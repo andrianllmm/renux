@@ -4,10 +4,12 @@
   scrollbar-background-active: $background-lighten-1;
 }
 
-#banner {
-  align: center middle;
-  height: 4;
-  color: $primary;
+#form-column {
+  width: 1fr;
+}
+
+#preview-column {
+  width: 1.5fr;
 }
 
 #form {
