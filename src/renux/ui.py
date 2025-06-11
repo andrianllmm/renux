@@ -1,9 +1,13 @@
+from importlib.resources import files
 from pyfiglet import figlet_format
 from rich.console import Console
 from textual.theme import Theme
 
+# Path to the CSS file
+CSS_PATH = files("renux.assets").joinpath("styles.tcss")
 
-theme = Theme(
+# Textual Theme
+THEME = Theme(
     name="gruvbox",
     primary="#85A598",
     secondary="#A89A85",
@@ -22,6 +26,8 @@ theme = Theme(
     },
 )
 
-console = Console()
+# ASCII Banner
+BANNER = figlet_format("RENUX", font="smkeyboard")
 
-banner = figlet_format("RENUX", font="smkeyboard")
+# Rich console
+CONSOLE = Console()

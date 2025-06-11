@@ -1,6 +1,6 @@
-from textual.binding import Binding
+from textual.binding import Binding, BindingType
 
-BINDINGS = [
+BINDINGS: list[BindingType] = [
     Binding(
         "ctrl+q",
         "quit",
