@@ -111,7 +111,7 @@ class RenameApp(App):
 
     def action_undo(self) -> None:
         if not self.rename_history:
-            self.show_message("Nothing to undo.", THEME.error)
+            self.show_message("Nothing to undo.", "error")
             return
 
         last_renames = self.rename_history.pop()
@@ -119,15 +119,15 @@ class RenameApp(App):
         try:
             apply_renames(self.directory, last_renames)
             self.redo_stack.append([(old, new) for new, old in last_renames])
-            self.show_message("Undo successful.", THEME.success)
+            self.show_message("Undo successful.", "success")
         except Exception as e:
-            self.show_message(f"Undo failed: {e}", THEME.error)
+            self.show_message(f"Undo failed: {e}", "error")
 
         self.query_one(Preview).update_preview()
 
     def action_redo(self) -> None:
         if not self.redo_stack:
-            self.show_message("Nothing to redo.", THEME.error)
+            self.show_message("Nothing to redo.", "error")
             return
 
         renames = self.redo_stack.pop()
@@ -135,8 +135,8 @@ class RenameApp(App):
         try:
             apply_renames(self.directory, renames)
             self.rename_history.append([(new, old) for old, new in renames])
-            self.show_message("Redo successful.", THEME.success)
+            self.show_message("Redo successful.", "success")
         except Exception as e:
-            self.show_message(f"Redo failed: {e}", THEME.error)
+            self.show_message(f"Redo failed: {e}", "error")
 
         self.query_one(Preview).update_preview()
