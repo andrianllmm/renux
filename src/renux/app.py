@@ -31,6 +31,9 @@ class RenameApp(App):
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
+        self.rename_history = []
+        self.redo_stack = []
+
         self.directory = directory or os.getcwd()
         self.pattern = pattern or ""
         self.replacement = replacement or ""
@@ -96,6 +99,7 @@ class RenameApp(App):
             renames = get_renames(
                 files, self.directory, self.pattern, self.replacement, self.options
             )
+            self.rename_history.append([(new, old) for old, new in renames])
             apply_renames(self.directory, renames)
 
             self.query_one("#pattern", Input).value = ""
@@ -104,4 +108,36 @@ class RenameApp(App):
             self.show_message("Changes applied successfully.", "success")
         except Exception as e:
             self.show_message(str(e))
+        self.query_one(Preview).update_preview()
+
+    def action_undo(self) -> None:
+        if not self.rename_history:
+            self.show_message("Nothing to undo.", THEME.error)
+            return
+
+        last_renames = self.rename_history.pop()
+
+        try:
+            apply_renames(self.directory, last_renames)
+            self.redo_stack.append([(old, new) for new, old in last_renames])
+            self.show_message("Undo successful.", THEME.success)
+        except Exception as e:
+            self.show_message(f"Undo failed: {e}", THEME.error)
+
+        self.query_one(Preview).update_preview()
+
+    def action_redo(self) -> None:
+        if not self.redo_stack:
+            self.show_message("Nothing to redo.", THEME.error)
+            return
+
+        renames = self.redo_stack.pop()
+
+        try:
+            apply_renames(self.directory, renames)
+            self.rename_history.append([(new, old) for old, new in renames])
+            self.show_message("Redo successful.", THEME.success)
+        except Exception as e:
+            self.show_message(f"Redo failed: {e}", THEME.error)
+
         self.query_one(Preview).update_preview()
