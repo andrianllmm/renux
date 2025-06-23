@@ -1,10 +1,13 @@
 name: Publish to PyPI
 
 on:
+  push:
+    tags:
+      - "v*.*.*"
   workflow_dispatch:
 
 jobs:
-  pypi-publish:
+  release-pypi:
     name: Manual Publish to PyPI
     runs-on: ubuntu-latest
 
@@ -29,8 +32,12 @@ jobs:
         run: |
           poetry build
 
-      - name: Publish to PyPI
+      - name: Configure PyPI Repository
+        run: |
+          poetry config pypi-token.pypi $POETRY_PYPI_TOKEN_PYPI
         env:
           POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_TOKEN }}
+
+      - name: Publish to PyPI
         run: |
-          poetry publish --username __token__ --password $POETRY_PYPI_TOKEN_PYPI
+          poetry publish --no-interaction

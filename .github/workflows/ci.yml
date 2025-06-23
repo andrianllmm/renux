@@ -11,7 +11,7 @@ defaults:
     shell: bash
 
 jobs:
-  python-test:
+  test:
     name: Run Python tests
     strategy:
       fail-fast: false

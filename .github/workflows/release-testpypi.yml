@@ -3,10 +3,10 @@ name: Release to TestPyPI
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v*.*.*-*"
 
 jobs:
-  testpypi-release:
+  release-testpypi:
     name: Build and Publish to TestPyPI
     runs-on: ubuntu-latest
 
@@ -31,9 +31,13 @@ jobs:
         run: |
           poetry build
 
-      - name: Publish to TestPyPI
-        env:
-          POETRY_PYPI_TOKEN_TESTPYPI: ${{ secrets.TEST_PYPI_TOKEN }}
+      - name: Configure TestPyPI Repository
         run: |
           poetry config repositories.testpypi https://test.pypi.org/legacy/
-          poetry publish -r testpypi --username __token__ --password $POETRY_PYPI_TOKEN_TESTPYPI
+          poetry config pypi-token.testpypi $POETRY_PYPI_TOKEN_TESTPYPI
+        env:
+          POETRY_PYPI_TOKEN_TESTPYPI: ${{ secrets.TEST_PYPI_TOKEN }}
+
+      - name: Publish to TestPyPI
+        run: |
+          poetry publish -r testpypi --no-interaction
