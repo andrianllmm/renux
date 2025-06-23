@@ -1,17 +1,13 @@
 import os
 from argparse import ArgumentParser, Namespace
-from rich.text import Text
 
-from renux.ui import CONSOLE, THEME, BANNER
 from renux.constants import DEFAULT_OPTIONS, APPLY_TO_OPTIONS
 
 
 class CustomParser(ArgumentParser):
     """Custom argument parser."""
 
-    def print_help(self, file=None):
-        CONSOLE.print(Text(BANNER, style=THEME.primary + " bold"))
-        return super().print_help(file)
+    pass
 
 
 def parse_args() -> Namespace:

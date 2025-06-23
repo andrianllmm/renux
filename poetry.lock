@@ -249,18 +249,6 @@ dev = ["pre-commit", "tox"]
 testing = ["coverage", "pytest", "pytest-benchmark"]
 
 [[package]]
-name = "pyfiglet"
-version = "1.0.3"
-description = "Pure-python FIGlet implementation"
-optional = false
-python-versions = ">=3.9"
-groups = ["main"]
-files = [
-    {file = "pyfiglet-1.0.3-py3-none-any.whl", hash = "sha256:671bd101ca6a08dc2d94c6a2cda75a862c5e162b980af47d0ba4023837e36489"},
-    {file = "pyfiglet-1.0.3.tar.gz", hash = "sha256:bad3b55d2eccb30d4693ccfd94573c2a3477dd75f86a0e5465cea51bdbfe2875"},
-]
-
-[[package]]
 name = "pygments"
 version = "2.19.1"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -443,4 +431,4 @@ test = ["coverage", "pytest", "pytest-cov"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0.0"
-content-hash = "e2b1bfc1a43389afc4580bd74a8043530d06934c9ae8400aa9e8b4c2b99592bb"
+content-hash = "0fb4f8d9627e2fdbca4c84de4ed69af03901f89e4b81fb5fd3caf03773f1ba77"

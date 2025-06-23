@@ -1,5 +1,4 @@
 from importlib.resources import files
-from pyfiglet import figlet_format
 from rich.console import Console
 from textual.theme import Theme
 
@@ -25,9 +24,6 @@ THEME = Theme(
         "input-selection-background": "#689d6a40",
     },
 )
-
-# ASCII Banner
-BANNER = figlet_format("RENUX", font="smkeyboard")
 
 # Rich console
 CONSOLE = Console()
