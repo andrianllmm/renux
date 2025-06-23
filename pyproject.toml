@@ -21,8 +21,10 @@ build-backend = "poetry.core.masonry.api"
 [project.scripts]
 renux = "renux.cli:main"
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.test.dependencies]
 pytest = "^8.4.1"
+
+[tool.poetry.group.dev.dependencies]
 mypy = "^1.16.1"
 commitizen = "^4.8.3"
 black = "^25.1.0"
