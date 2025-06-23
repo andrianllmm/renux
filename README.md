@@ -9,7 +9,7 @@
 
 **A terminal-based bulk file renamer with a TUI**
 
-<img src="docs/images/preview.gif" alt="Preview" width="500">
+<img src="https://github.com/andrianllmm/renux/raw/main/docs/images/preview.gif" alt="Preview" width="500">
 
 </div>
 
