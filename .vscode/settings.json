@@ -1,0 +1,10 @@
+{
+  // Use the project venv as interpreter
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+
+  // Use Black for formatting
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true
+  }
+}
