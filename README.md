@@ -4,6 +4,8 @@
 [![Downloads](https://img.shields.io/pypi/dm/renux.svg?style=flat)](https://pypi.org/project/renux/)
 [![License](https://img.shields.io/github/license/andrianllmm/renux?style=flat)](https://github.com/andrianllmm/renux/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/andrianllmm/renux?style=flat)](https://github.com/andrianllmm/renux/stargazers)
+[![CI](https://github.com/andrianllmm/renux/actions/workflows/ci.yml/badge.svg)](https://github.com/andrianllmm/renux/actions/workflows/ci.yml)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/andrianllmm/renux/main.svg)](https://results.pre-commit.ci/latest/github/andrianllmm/renux/main)
 
 # renux
 
