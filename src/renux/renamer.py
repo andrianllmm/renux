@@ -2,10 +2,7 @@ import datetime
 import os
 import re
 
-from renux.constants import (
-    DEFAULT_OPTIONS,
-    TEXT_OPERATIONS,
-)
+from renux.constants import DEFAULT_OPTIONS, TEXT_OPERATIONS
 
 
 def apply_renames(directory: str, renames: list[tuple[str, str]]) -> None:

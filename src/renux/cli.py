@@ -1,8 +1,8 @@
 import os
 
 from renux.app import RenameApp
-from renux.ui import THEME, CONSOLE
 from renux.parser import parse_args
+from renux.ui import CONSOLE, THEME
 
 
 def main() -> None:

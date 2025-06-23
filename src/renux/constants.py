@@ -1,13 +1,13 @@
-from slugify import slugify
 from typing import Callable
+
+from slugify import slugify
 
 from renux.helpers.casing import (
     to_camel_case,
+    to_kebab_case,
     to_pascal_case,
     to_snake_case,
-    to_kebab_case,
 )
-
 
 DEFAULT_OPTIONS: dict[str, str | int | bool] = {
     "count": 0,

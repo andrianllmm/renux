@@ -1,4 +1,5 @@
 from importlib.resources import files
+
 from rich.console import Console
 from textual.theme import Theme
 

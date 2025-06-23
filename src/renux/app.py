@@ -1,19 +1,16 @@
 import os
-from textual.app import App, ComposeResult
-from textual.widgets import Footer, Label, Input, Checkbox, Select
-from textual.containers import (
-    Container,
-    HorizontalScroll,
-    VerticalScroll,
-)
 
-from renux.renamer import apply_renames, get_renames
-from renux.components import Form, Preview
-from renux.ui import CSS_PATH, THEME
-from renux.bindings import BINDINGS
+from textual.app import App, ComposeResult
+from textual.containers import Container, HorizontalScroll, VerticalScroll
+from textual.widgets import Checkbox, Footer, Input, Label, Select
+
 from renux.backup import load_backup, save_backup
+from renux.bindings import BINDINGS
+from renux.components import Form, Preview
 from renux.constants import DEFAULT_OPTIONS
 from renux.helpers.files import get_files
+from renux.renamer import apply_renames, get_renames
+from renux.ui import CSS_PATH, THEME
 
 
 class RenameApp(App):

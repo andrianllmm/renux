@@ -1,8 +1,8 @@
 from renux.constants import (
-    TEXT_OPERATIONS,
     COUNTER_KEYWORD,
-    DATE_KEYWORDS,
     DATE_FORMATS,
+    DATE_KEYWORDS,
+    TEXT_OPERATIONS,
 )
 
 

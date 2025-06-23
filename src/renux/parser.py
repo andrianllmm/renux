@@ -1,7 +1,7 @@
 import os
 from argparse import ArgumentParser, Namespace
 
-from renux.constants import DEFAULT_OPTIONS, APPLY_TO_OPTIONS
+from renux.constants import APPLY_TO_OPTIONS, DEFAULT_OPTIONS
 
 
 class CustomParser(ArgumentParser):

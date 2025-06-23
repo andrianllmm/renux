@@ -1,11 +1,12 @@
 import os
 from typing import TYPE_CHECKING
+
 from rich.highlighter import RegexHighlighter
-from textual.widget import Widget
-from textual.widgets import Input, Checkbox, Select, Label
-from textual.validation import Number
-from textual.suggester import SuggestFromList
 from textual.containers import Horizontal
+from textual.suggester import SuggestFromList
+from textual.validation import Number
+from textual.widget import Widget
+from textual.widgets import Checkbox, Input, Label, Select
 
 from renux.constants import APPLY_TO_OPTIONS
 from renux.helpers.keywords import get_keywords

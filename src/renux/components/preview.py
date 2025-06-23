@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+
 from rich.text import Text
 from textual.widget import Widget
 from textual.widgets import Tree

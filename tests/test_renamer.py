@@ -1,13 +1,14 @@
 import os
-import pytest
 from datetime import datetime
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from renux.renamer import (
     apply_renames,
-    get_renames,
-    get_rename,
     apply_text_operations,
+    get_rename,
+    get_renames,
     process_counter_placeholder,
     process_date_placeholders,
 )
