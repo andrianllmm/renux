@@ -1,7 +1,7 @@
 <div align="center">
 
 [![PyPI version](https://img.shields.io/pypi/v/renux.svg?style=flat)](https://pypi.org/project/renux/)
-[![Downloads](https://img.shields.io/pypi/dm/renux.svg?style=flat)](https://pypi.org/project/renux/)
+[![Downloads](https://pepy.tech/badge/renux)](https://pepy.tech/project/renux)
 [![License](https://img.shields.io/github/license/andrianllmm/renux?style=flat)](https://github.com/andrianllmm/renux/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/andrianllmm/renux?style=flat)](https://github.com/andrianllmm/renux/stargazers)
 [![CI](https://github.com/andrianllmm/renux/actions/workflows/ci.yml/badge.svg)](https://github.com/andrianllmm/renux/actions/workflows/ci.yml)
@@ -56,6 +56,8 @@ Alternatively, you can use [pip](https://pip.pypa.io/en/stable/).
 renux [directory] [pattern] [replacement]
 ```
 
+**Arguments**
+
 - `directory`: Directory where files are located (default is the current
   directory or `.`).
 - `pattern`: Search pattern, which can be a regular expression (default is '').
@@ -96,33 +98,33 @@ renux [directory] [pattern] [replacement]
 - **Dates**: `{now|created_at|modified_at(<format>)}`, e.g., `{now(%Y)}` will
   replace it with the current year
 
-Run `python project.py -h` for more details.
+Run `renux --help` for more details.
 
 ### Examples
 
 - Rename files starting with "IMG" to "Image":
   ```sh
-  python project.py my_photos/ IMG_ Image_
+  renux my_photos/ IMG_ Image_
   ```
 - Rename all `.txt` files to `.bak`:
   ```sh
-  python project.py my_directory/ .txt .bak --apply-to ext
+  renux my_directory/ .txt .bak --apply-to ext
   ```
 - Use regex to retain information from the old name:
   ```sh
-  python project.py my_documents "document (\d).pdf" "doc (\1).pdf" -r
+  renux my_documents "document (\d).pdf" "doc (\1).pdf" -r
   ```
 - Append a counter to filenames:
   ```sh
-  python project.py my_files/ file "file_{counter}"
+  renux my_files/ file "file_{counter}"
   ```
 - Append creation year to filenames:
   ```sh
-  python project.py my_files/ file "file_{created_at(%Y)}"
+  renux my_files/ file "file_{created_at(%Y)}"
   ```
 - Apply transformations like slugify:
   ```sh
-  python project.py my_files "(.*)" "{filename|slugify}" -r
+  renux my_files "(.*)" "{filename|slugify}" -r
   ```
 
 ## Dev Setup
@@ -132,22 +134,17 @@ Run `python project.py -h` for more details.
    git clone https://github.com/andrianllmm/renux.git
    cd renux
    ```
-2. Create and activate a virtual environment
+2. Install dependencies with [Poetry](https://python-poetry.org/)
    ```sh
-   python -m venv venv
-   source venv/bin/activate  # or `venv\Scripts\activate` on Windows
-   ```
-3. Install the dependencies
-   ```sh
-   pip install -r requirements.txt
+   poetry install
    ```
 
 ### Testing
 
-Run tests with:
+Run tests with [pytest](https://docs.pytest.org/en/stable/):
 
 ```sh
-pytest
+poetry run python -m pytest
 ```
 
 ## Contributing
