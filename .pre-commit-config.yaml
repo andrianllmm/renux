@@ -15,15 +15,15 @@ repos:
     hooks:
       - id: isort
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.3.1
+    rev: 26.5.1
     hooks:
       - id: black
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.15.1
+    rev: v4.16.3
     hooks:
       - id: commitizen
         stages: [commit-msg]
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v2.0.0
+    rev: v2.1.0
     hooks:
       - id: mypy
