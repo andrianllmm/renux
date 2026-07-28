@@ -77,7 +77,6 @@ renux [directory] [pattern] [replacement]
 **Markup**
 
 - **Text transformations**: `{string|operation}`
-
   - `slugify`: Convert into a URL/filename-friendly format (e.g., "hello world"
     → "hello-world")
   - `lower`: Convert to lowercase
@@ -147,17 +146,10 @@ Run tests with [pytest](https://docs.pytest.org/en/stable/):
 poetry run python -m pytest
 ```
 
-## Contributing
+# Contributing
 
-Contributions are welcome! To get started:
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a pull request
+# License
 
-## Issues
-
-Found a bug or issue? Report it on the
-[issues page](https://github.com/andrianllmm/renux/issues).
+Distributed under the [MIT License](LICENSE).
