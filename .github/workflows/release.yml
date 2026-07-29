@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: pypi
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install Poetry
+        run: python -m pip install -U pip poetry
+
+      - name: Configure Poetry
+        run: |
+          poetry config virtualenvs.in-project true
+          poetry install --only main --no-interaction
+
+      - name: Generate release notes
+        run: poetry run git-cliff --latest --output RELEASE.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: RELEASE.md
+
+      - name: Update changelog
+        run: |
+          poetry run git-cliff --output CHANGELOG.md
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git diff --staged --quiet || git commit -m "chore: update changelog for ${GITHUB_REF_NAME}"
+          git push origin HEAD:main
+
+      - name: Build
+        run: |
+          rm -rf dist
+          poetry build
+
+      - name: Check package
+        run: poetry run twine check dist/*
+
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@release/v1
