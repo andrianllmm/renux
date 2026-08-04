@@ -108,6 +108,10 @@ def get_rename(
     """Generate a new file name by applying the search pattern and replacement rules."""
     options = {**DEFAULT_OPTIONS, **options}  # options overrides DEFAULT_OPTIONS
 
+    # Abort if no search pattern is given (avoids matching/replacing every character)
+    if not pattern:
+        return file_name
+
     flags = 0
 
     if not options["regex"]:
