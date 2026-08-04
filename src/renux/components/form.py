@@ -9,7 +9,7 @@ from textual.widgets import Checkbox, Input, Label, Select
 
 from renux.constants import APPLY_TO_OPTIONS
 from renux.helpers.highlighter import TokenHighlighter
-from renux.helpers.keywords import get_keywords
+from renux.helpers.suggester import TagSuggester
 
 if TYPE_CHECKING:
     from renux.app import RenameApp
@@ -42,9 +42,7 @@ class Form(Widget):
             placeholder="Replace with",
             compact=True,
             highlighter=highlighter,
-            suggester=SuggestFromList(
-                self.app.files + get_keywords(), case_sensitive=False
-            ),
+            suggester=TagSuggester(self.app.files, case_sensitive=False),
             classes="mb",
         )
 
