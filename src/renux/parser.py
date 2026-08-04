@@ -1,7 +1,23 @@
 import os
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 
-from renux.constants import APPLY_TO_OPTIONS, DEFAULT_OPTIONS
+from renux.constants import APPLY_TO_OPTIONS, DEFAULT_OPTIONS, TEXT_OPERATIONS
+
+MARKUP_HELP = f"""
+markup syntax (usable in `replacement`):
+  text transformations   {{string|operation}}
+                          operations: {", ".join(TEXT_OPERATIONS)}
+  counter                {{counter(start=1,step=1,padding=1)}}
+  dates                  {{now|created_at|modified_at(<format>)}}
+                          <format> uses strftime codes, e.g. %Y
+
+examples:
+  renux my_files/ file "file_{{counter}}"
+  renux my_files/ file "file_{{created_at(%Y)}}"
+  renux my_files "(.*)" "{{filename|slugify}}" -r
+
+See https://github.com/andrianllmm/renux#markup for full details.
+"""
 
 
 class CustomParser(ArgumentParser):
@@ -14,6 +30,8 @@ def parse_args() -> Namespace:
     """Parse and return the command-line arguments."""
     parser = CustomParser(
         description="A command-line tool for bulk file renaming and organization using regex.",
+        epilog=MARKUP_HELP,
+        formatter_class=RawDescriptionHelpFormatter,
     )
 
     parser.add_argument(
