@@ -1,6 +1,6 @@
 [project]
 name = "renux"
-version = "0.2.0"
+version = "0.3.0"
 description = "A terminal-based bulk file renamer with a TUI"
 authors = [
     {name = "Andrian Lloyd Maagma", email = "maagmaandrian@gmail.com"}
