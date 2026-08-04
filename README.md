@@ -81,6 +81,10 @@ renux [directory] [pattern] [replacement]
   - `name`: Rename the file's base name (default).
   - `ext`: Rename the file's extension.
   - `both`: Rename both the name and extension.
+- `-y`, `--yes`: Apply the rename immediately without opening the TUI
+  (headless mode, useful for scripts/CI).
+- `--dry-run`: Preview the rename without opening the TUI or changing any
+  files (headless mode).
 
 **Tags**
 

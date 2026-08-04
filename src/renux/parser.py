@@ -69,5 +69,16 @@ def parse_args() -> Namespace:
         default=DEFAULT_OPTIONS["apply_to"],
         help=f"Specifies where the renaming should be applied (default: {DEFAULT_OPTIONS['apply_to']}).",
     )
+    parser.add_argument(
+        "-y",
+        "--yes",
+        action="store_true",
+        help="Apply the rename immediately without opening the TUI (headless mode).",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Preview the rename without opening the TUI or changing any files (headless mode).",
+    )
 
     return parser.parse_args()
