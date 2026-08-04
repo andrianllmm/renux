@@ -5,7 +5,6 @@ from textual.widget import Widget
 from textual.widgets import Tree
 
 from renux.renamer import get_renames
-from renux.ui import THEME
 
 if TYPE_CHECKING:
     from renux.app import RenameApp
@@ -36,17 +35,18 @@ class Preview(Widget):
             self.app.options,
         )
 
+        theme = self.app.current_theme
         self._tree.root.remove_children()
         for old, new in renames:
             disabled = old in self.app.disabled_files
             text = Text()
             text.append(
-                "▢ " if disabled else "▣ ", "dim" if disabled else THEME.primary
+                "▢ " if disabled else "▣ ", "dim" if disabled else theme.primary
             )
-            text.append(old, "dim" if disabled else THEME.foreground)
+            text.append(old, "dim" if disabled else theme.foreground)
             if old != new:
                 text.append(" → ", "dim bold"),
-                text.append(new, str("dim" if disabled else THEME.primary) + " bold"),
+                text.append(new, ("dim" if disabled else theme.primary) + " bold"),
 
             self._tree.root.add_leaf(text, data=old)
 

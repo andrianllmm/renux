@@ -45,7 +45,7 @@ class RenameApp(App):
 
     def on_mount(self) -> None:
         self.register_theme(THEME)
-        self.theme = "gruvbox"
+        self.theme = THEME.name
         # Focus on the first input field
         self.query_one("#pattern", Input).focus()
 

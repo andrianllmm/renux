@@ -6,21 +6,26 @@
 
 #form-column {
   width: 1fr;
+  border: round $secondary;
+  padding: 1;
+  margin: 1;
+}
+
+#form-column > Container {
+  height: auto;
 }
 
 #preview-column {
   width: 1.5fr;
+  border: round $secondary;
+  padding: 1;
+  margin: 1;
 }
 
 #form {
+  height: auto;
   padding-right: 1;
   padding-left: 1;
-}
-
-#preview {
-  border: round $primary;
-  padding: 1;
-  margin: 1;
 }
 
 Header {

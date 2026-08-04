@@ -1,29 +1,26 @@
+import dataclasses
 from importlib.resources import files
 
 from rich.console import Console
-from textual.theme import Theme
+from textual.theme import BUILTIN_THEMES
 
 # Path to the CSS file
 CSS_PATH = files("renux.assets").joinpath("styles.tcss")
 
-# Textual Theme
-THEME = Theme(
-    name="gruvbox",
-    primary="#85A598",
-    secondary="#A89A85",
-    warning="#fabd2f",
-    error="#fb4934",
-    success="#b8bb26",
-    accent="#fabd2f",
-    foreground="#fbf1c7",
-    background="#282828",
-    surface="#3c3836",
-    panel="#504945",
-    dark=True,
-    variables={
-        "block-cursor-foreground": "#fbf1c7",
-        "input-selection-background": "#689d6a40",
-    },
+# Custom Textual theme, based on the built-in "textual-dark" theme with a
+# minimal set of overrides for a near-black, neutral grayscale palette
+# (inspired by Vercel/shadcn-ui), keeping vibrant color reserved for
+# semantic states (focus, selection, errors, warnings, success).
+THEME = dataclasses.replace(
+    BUILTIN_THEMES["textual-dark"],
+    name="renux",
+    primary="#e4e4e7",
+    secondary="#52525b",
+    accent="#e4e4e7",
+    foreground="#fafafa",
+    background="#0a0a0a",
+    surface="#111113",
+    panel="#18181b",
 )
 
 # Rich console
