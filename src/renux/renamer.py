@@ -97,6 +97,29 @@ def get_renames(
     return renames
 
 
+def _sub(pattern: str, repl: str, string: str, count: int, flags: int) -> str:
+    """Like `re.sub`, but skips a zero-length match immediately adjacent to the
+    previous match (e.g. avoids `.*` matching the whole string and then
+    matching again at the empty end)."""
+    pieces = []
+    pos = 0
+    last_end = -1
+    n_subs = 0
+    for m in re.finditer(pattern, string, flags):
+        if count and n_subs >= count:
+            break
+        start, end = m.span()
+        if start < pos or (start == end and start == last_end):
+            continue
+        pieces.append(string[pos:start])
+        pieces.append(m.expand(repl))
+        pos = end
+        last_end = end
+        n_subs += 1
+    pieces.append(string[pos:])
+    return "".join(pieces)
+
+
 def get_rename(
     file_name: str,
     directory: str,
@@ -107,6 +130,10 @@ def get_rename(
 ) -> str:
     """Generate a new file name by applying the search pattern and replacement rules."""
     options = {**DEFAULT_OPTIONS, **options}  # options overrides DEFAULT_OPTIONS
+
+    # Abort if no search pattern is given (avoids matching/replacing every character)
+    if not pattern:
+        return file_name
 
     flags = 0
 
@@ -128,19 +155,15 @@ def get_rename(
     name, ext = os.path.splitext(file_name)
 
     if options["apply_to"] == "name":
-        new_name = (
-            re.sub(pattern, replacement, name, options["count"], flags=flags) + ext
-        )
+        new_name = _sub(pattern, replacement, name, options["count"], flags=flags) + ext
     elif options["apply_to"] == "ext":
         new_name = (
             name
             + "."
-            + re.sub(pattern, replacement, ext[1:], options["count"], flags=flags)
+            + _sub(pattern, replacement, ext[1:], options["count"], flags=flags)
         )
     else:
-        new_name = re.sub(
-            pattern, replacement, file_name, options["count"], flags=flags
-        )
+        new_name = _sub(pattern, replacement, file_name, options["count"], flags=flags)
 
     # Apply additional text operations
     new_name = apply_text_operations(new_name)
