@@ -495,6 +495,8 @@ def _resolve_frame_rate(ctx: PlaceholderContext) -> str:
     path = os.path.join(ctx.directory, ctx.file_name)
     metadata = _video_metadata(path)
     fps = metadata.get("frame_rate")
+    if fps is None:
+        raise ValueError(f"No frame rate found for video file: {path}")
     return f"{fps:.2f}".rstrip("0").rstrip(".") + "fps"
 
 
@@ -502,6 +504,8 @@ def _resolve_duration(ctx: PlaceholderContext) -> str:
     path = os.path.join(ctx.directory, ctx.file_name)
     metadata = _video_metadata(path)
     duration = metadata.get("duration")
+    if duration is None:
+        raise ValueError(f"No duration found for video file: {path}")
     return f"{int(duration.total_seconds())}s"
 
 
