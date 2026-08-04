@@ -39,3 +39,49 @@ def test_headless_no_matches(tmp_path, monkeypatch):
     main()
 
     assert sorted(os.listdir(tmp_path)) == ["baz.txt"]
+
+
+def test_headless_undo_reverts_last_rename(tmp_path, monkeypatch):
+    """`--undo` should revert the last headless rename without opening the TUI."""
+    _make_files(tmp_path, ["foo1.txt", "foo2.txt"])
+
+    monkeypatch.setattr("sys.argv", ["renux", str(tmp_path), "foo", "bar", "--yes"])
+    main()
+    assert sorted(os.listdir(tmp_path)) == ["bar1.txt", "bar2.txt"]
+
+    monkeypatch.setattr("sys.argv", ["renux", str(tmp_path), "--undo"])
+    main()
+    assert sorted(os.listdir(tmp_path)) == ["foo1.txt", "foo2.txt"]
+
+
+def test_headless_redo_reapplies_last_undo(tmp_path, monkeypatch):
+    """`--redo` should reapply the last headless undo without opening the TUI."""
+    _make_files(tmp_path, ["foo1.txt", "foo2.txt"])
+
+    monkeypatch.setattr("sys.argv", ["renux", str(tmp_path), "foo", "bar", "--yes"])
+    main()
+    monkeypatch.setattr("sys.argv", ["renux", str(tmp_path), "--undo"])
+    main()
+    assert sorted(os.listdir(tmp_path)) == ["foo1.txt", "foo2.txt"]
+
+    monkeypatch.setattr("sys.argv", ["renux", str(tmp_path), "--redo"])
+    main()
+    assert sorted(os.listdir(tmp_path)) == ["bar1.txt", "bar2.txt"]
+
+
+def test_headless_undo_nothing_to_undo(tmp_path, monkeypatch, capsys):
+    """`--undo` with an empty undo stack should report and not error."""
+    monkeypatch.setattr("sys.argv", ["renux", str(tmp_path), "--undo"])
+
+    main()
+
+    assert "Nothing to undo." in capsys.readouterr().out
+
+
+def test_headless_redo_nothing_to_redo(tmp_path, monkeypatch, capsys):
+    """`--redo` with an empty redo stack should report and not error."""
+    monkeypatch.setattr("sys.argv", ["renux", str(tmp_path), "--redo"])
+
+    main()
+
+    assert "Nothing to redo." in capsys.readouterr().out

@@ -85,6 +85,10 @@ renux [directory] [pattern] [replacement]
   (headless mode, useful for scripts/CI).
 - `--dry-run`: Preview the rename without opening the TUI or changing any
   files (headless mode).
+- `--undo`: Undo the last rename applied to `directory` without opening the
+  TUI (headless mode).
+- `--redo`: Redo the last undone rename in `directory` without opening the
+  TUI (headless mode).
 
 **Tags**
 

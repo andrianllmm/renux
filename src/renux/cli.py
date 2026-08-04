@@ -40,6 +40,47 @@ def run_headless(
     CONSOLE.print(f"Renamed {len(changed)} file(s).", style="green")
 
 
+def run_undo(directory: str) -> None:
+    """Undo the last rename applied to `directory` without opening the TUI."""
+    undo_stack, redo_stack = load_backup(directory)
+
+    if not undo_stack:
+        CONSOLE.print("Nothing to undo.", style="yellow")
+        return
+
+    last_renames = undo_stack.pop()
+
+    try:
+        reversed_renames = [(new, old) for old, new in last_renames]
+        apply_renames(directory, reversed_renames)
+        redo_stack.append(last_renames)
+        CONSOLE.print("Undo successful.", style="green")
+    except Exception as e:
+        CONSOLE.print(f"Undo failed: {e}", style="red")
+
+    save_backup(directory, undo_stack, redo_stack)
+
+
+def run_redo(directory: str) -> None:
+    """Redo the last undone rename in `directory` without opening the TUI."""
+    undo_stack, redo_stack = load_backup(directory)
+
+    if not redo_stack:
+        CONSOLE.print("Nothing to redo.", style="yellow")
+        return
+
+    renames = redo_stack.pop()
+
+    try:
+        apply_renames(directory, renames)
+        undo_stack.append(renames)
+        CONSOLE.print("Redo successful.", style="green")
+    except Exception as e:
+        CONSOLE.print(f"Redo failed: {e}", style="red")
+
+    save_backup(directory, undo_stack, redo_stack)
+
+
 def main() -> None:
     """Main entry point of the script."""
     # Parse command-line arguments
@@ -49,6 +90,14 @@ def main() -> None:
     if not os.path.isdir(directory):
         CONSOLE.print(f"Directory `{directory}` does not exist.", style="red")
         return
+    # Headless mode: undo/redo the last rename directly and exit, no TUI
+    if args.undo:
+        run_undo(directory)
+        return
+    if args.redo:
+        run_redo(directory)
+        return
+
     pattern = args.pattern
     replacement = args.replacement
     options = {
