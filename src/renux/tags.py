@@ -73,7 +73,7 @@ PLACEHOLDERS: dict[str, Placeholder] = {}
 
 # Display order for placeholder categories in generated docs. A category not
 # listed here is appended after these, in first-registered order.
-CATEGORY_ORDER = ["General", "Date"]
+CATEGORY_ORDER = ["General", "Date", "File"]
 
 
 def register_filter(name: str, func: Callable[[str], str], description: str) -> None:
@@ -260,4 +260,40 @@ register_placeholder(
     syntax="{modified_at(<format>)}",
     category="Date",
     arg_suggestions=DATE_FORMAT_SUGGESTIONS,
+)
+
+
+_SIZE_UNITS = {"b": 1, "kb": 1024, "mb": 1024**2, "gb": 1024**3}
+
+SIZE_UNIT_SUGGESTIONS = ["", "(b)", "(kb)", "(mb)", "(gb)"]
+
+
+def _resolve_size(ctx: PlaceholderContext) -> str:
+    path = os.path.join(ctx.directory, ctx.file_name)
+    size_bytes = os.path.getsize(path)
+
+    unit = ctx.args.strip().lower()
+    if unit not in _SIZE_UNITS:
+        # Auto-pick the largest unit that keeps the value at least 1.
+        unit = "b"
+        for candidate in ("kb", "mb", "gb"):
+            if size_bytes < _SIZE_UNITS[candidate]:
+                break
+            unit = candidate
+
+    value = size_bytes / _SIZE_UNITS[unit]
+    if unit == "b":
+        return f"{int(value)}{unit}"
+    return f"{value:.2f}".rstrip("0").rstrip(".") + unit
+
+
+register_placeholder(
+    "size",
+    _resolve_size,
+    "The file's size. Auto-scaled to the largest sensible unit unless a "
+    "unit (b, kb, mb, gb) is given.",
+    syntax="{size(<unit>)}",
+    category="File",
+    example="{size(mb)}",
+    arg_suggestions=SIZE_UNIT_SUGGESTIONS,
 )

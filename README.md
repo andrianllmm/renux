@@ -35,6 +35,8 @@ conventions.
   file2.txt) with customizable starting points, increments, and padding.
 - **Date placeholders**: include file creation/modification dates or the current
   date in filenames with customizable formats.
+- **File size placeholders**: include a file's size, auto-scaled to the
+  largest sensible unit or a specific one (bytes, KB, MB, GB).
 - **Backup and undo/redo**: save and restore changes to your files.
 - **File exclusion**: exclude files from renaming.
 - **Keyboard shortcuts**: use hotkeys to quickly apply actions and navigate the
@@ -103,6 +105,10 @@ renux [directory] [pattern] [replacement]
     The file's creation date/time.
   - **Modified At**: `{modified_at(<format>)}`
     The file's last-modified date/time.
+
+- **File**
+  - **Size**: `{size(<unit>)}`, e.g., `{size(mb)}`
+    The file's size. Auto-scaled to the largest sensible unit unless a unit (b, kb, mb, gb) is given.
 <!-- TAGS:END -->
 
 Run `renux --help` for more details.
