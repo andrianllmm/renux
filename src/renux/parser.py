@@ -69,5 +69,33 @@ def parse_args() -> Namespace:
         default=DEFAULT_OPTIONS["apply_to"],
         help=f"Specifies where the renaming should be applied (default: {DEFAULT_OPTIONS['apply_to']}).",
     )
+    parser.add_argument(
+        "--exclude",
+        action="append",
+        metavar="PATTERN",
+        default=None,
+        help="Exclude files matching PATTERN (exact name or glob, e.g. `README.md`, `*.log`). Repeatable; prefix with `!` to re-include a file matched by an earlier pattern.",
+    )
+    parser.add_argument(
+        "-y",
+        "--yes",
+        action="store_true",
+        help="Apply the rename immediately without opening the TUI (headless mode).",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Preview the rename without opening the TUI or changing any files (headless mode).",
+    )
+    parser.add_argument(
+        "--undo",
+        action="store_true",
+        help="Undo the last rename applied to `directory` without opening the TUI (headless mode).",
+    )
+    parser.add_argument(
+        "--redo",
+        action="store_true",
+        help="Redo the last undone rename in `directory` without opening the TUI (headless mode).",
+    )
 
     return parser.parse_args()

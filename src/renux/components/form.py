@@ -45,6 +45,14 @@ class Form(Widget):
             suggester=TagSuggester(self.app.files, case_sensitive=False),
             classes="mb",
         )
+        yield Input(
+            id="exclude",
+            value=self.app.exclude,
+            placeholder="Exclude files (comma-separated)",
+            compact=True,
+            suggester=SuggestFromList(self.app.files, case_sensitive=False),
+            classes="mb",
+        )
 
         yield Label(
             "[bold]Options[/bold]",
@@ -83,7 +91,7 @@ class Form(Widget):
         )
 
     def on_input_changed(self, event: Input.Changed) -> None:
-        if event.input.id in ("pattern", "replacement"):
+        if event.input.id in ("pattern", "replacement", "exclude"):
             setattr(self.app, event.input.id, event.value)
         elif event.input.id == "count":
             self.app.options["count"] = int(event.value or "0")

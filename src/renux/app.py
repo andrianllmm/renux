@@ -8,7 +8,7 @@ from renux.backup import load_backup, save_backup
 from renux.bindings import BINDINGS
 from renux.components import Form, Preview
 from renux.constants import DEFAULT_OPTIONS
-from renux.helpers.files import get_files
+from renux.helpers.files import get_files, is_excluded
 from renux.renamer import apply_renames, get_renames
 from renux.screens import HelpScreen
 from renux.ui import CSS_PATH, THEME
@@ -26,6 +26,7 @@ class RenameApp(App):
         pattern: str = "",
         replacement: str = "",
         options: dict[str, str | int | bool] = DEFAULT_OPTIONS.copy(),
+        exclude: str = "",
         *args,
         **kwargs,
     ):
@@ -40,9 +41,15 @@ class RenameApp(App):
         self.pattern = pattern
         self.replacement = replacement
         self.options = options
+        self.exclude = exclude
 
         self.files = get_files(directory)
         self.disabled_files: list[str] = []
+
+    def is_excluded(self, file_name: str) -> bool:
+        """Check if `file_name` matches a pattern in the exclude field."""
+        patterns = [p.strip() for p in self.exclude.split(",") if p.strip()]
+        return is_excluded(file_name, patterns)
 
     def on_mount(self) -> None:
         self.register_theme(THEME)
@@ -91,8 +98,10 @@ class RenameApp(App):
         self.pattern = ""
         self.replacement = ""
         self.options = DEFAULT_OPTIONS.copy()
+        self.exclude = ""
         self.query_one("#pattern", Input).value = ""
         self.query_one("#replacement", Input).value = ""
+        self.query_one("#exclude", Input).value = ""
         self.query_one("#count", Input).value = str(DEFAULT_OPTIONS["count"])
         self.query_one("#regex", Checkbox).value = bool(DEFAULT_OPTIONS["regex"])
         self.query_one("#case_sensitive", Checkbox).value = bool(
@@ -101,7 +110,11 @@ class RenameApp(App):
         self.query_one("#apply_to", Select).value = DEFAULT_OPTIONS["apply_to"]
 
     def action_save(self) -> None:
-        files = [file for file in self.files if file not in self.disabled_files]
+        files = [
+            file
+            for file in self.files
+            if file not in self.disabled_files and not self.is_excluded(file)
+        ]
         try:
             renames = get_renames(
                 files, self.directory, self.pattern, self.replacement, self.options
