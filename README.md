@@ -37,6 +37,7 @@ conventions.
   date in filenames with customizable formats.
 - **File size placeholders**: include a file's size, auto-scaled to the
   largest sensible unit or a specific one (bytes, KB, MB, GB).
+- **Image placeholders**: include an image's width and height in pixels.
 - **Backup and undo/redo**: save and restore changes to your files.
 - **File exclusion**: exclude files from renaming.
 - **Keyboard shortcuts**: use hotkeys to quickly apply actions and navigate the
@@ -109,6 +110,12 @@ renux [directory] [pattern] [replacement]
 - **File**
   - **Size**: `{size(<unit>)}`, e.g., `{size(mb)}`
     The file's size. Auto-scaled to the largest sensible unit unless a unit (b, kb, mb, gb) is given.
+
+- **Image**
+  - **Width**: `{width}`
+    The image's width in pixels.
+  - **Height**: `{height}`
+    The image's height in pixels.
 <!-- TAGS:END -->
 
 Run `renux --help` for more details.

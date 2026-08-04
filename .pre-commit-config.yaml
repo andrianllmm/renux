@@ -34,6 +34,6 @@ repos:
         description: Regenerate README's Tags section from renux.tags
         entry: python scripts/sync_readme.py
         language: python
-        additional_dependencies: ["python-slugify"]
+        additional_dependencies: ["python-slugify", "pillow"]
         files: ^(src/renux/tags(_reference)?\.py|README\.md)$
         pass_filenames: false

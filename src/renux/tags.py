@@ -19,6 +19,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Callable
 
+from PIL import Image
 from slugify import slugify
 
 from renux.helpers.casing import (
@@ -73,7 +74,7 @@ PLACEHOLDERS: dict[str, Placeholder] = {}
 
 # Display order for placeholder categories in generated docs. A category not
 # listed here is appended after these, in first-registered order.
-CATEGORY_ORDER = ["General", "Date", "File"]
+CATEGORY_ORDER = ["General", "Date", "File", "Image"]
 
 
 def register_filter(name: str, func: Callable[[str], str], description: str) -> None:
@@ -296,4 +297,32 @@ register_placeholder(
     category="File",
     example="{size(mb)}",
     arg_suggestions=SIZE_UNIT_SUGGESTIONS,
+)
+
+
+def _resolve_width(ctx: PlaceholderContext) -> str:
+    path = os.path.join(ctx.directory, ctx.file_name)
+    with Image.open(path) as img:
+        return str(img.width)
+
+
+def _resolve_height(ctx: PlaceholderContext) -> str:
+    path = os.path.join(ctx.directory, ctx.file_name)
+    with Image.open(path) as img:
+        return str(img.height)
+
+
+register_placeholder(
+    "width",
+    _resolve_width,
+    "The image's width in pixels.",
+    syntax="{width}",
+    category="Image",
+)
+register_placeholder(
+    "height",
+    _resolve_height,
+    "The image's height in pixels.",
+    syntax="{height}",
+    category="Image",
 )
