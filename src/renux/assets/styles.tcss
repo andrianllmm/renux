@@ -23,7 +23,7 @@
 }
 
 #preview {
-  border: round $primary;
+  border: round $secondary;
   padding: 1;
   margin: 1;
 }
