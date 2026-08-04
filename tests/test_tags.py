@@ -33,7 +33,7 @@ def ctx(
     )
 
 
-# --- Registry ----------------------------------------------------------------
+# Registry
 
 
 def test_grouped_placeholders_uses_category_order():
@@ -58,7 +58,7 @@ def test_all_placeholders_and_filters_registered():
     assert "upper" in FILTERS and "slugify" in FILTERS
 
 
-# --- size ----------------------------------------------------------------
+# size
 
 
 def test_resolve_size_auto_scale(tmp_path):
@@ -92,7 +92,7 @@ def test_resolve_size_zero_byte_file(tmp_path):
     assert _resolve_size(ctx(directory=str(tmp_path), file_name="empty.bin")) == "0b"
 
 
-# --- width/height ----------------------------------------------------------------
+# width/height
 
 
 def test_resolve_width_height(tmp_path):
@@ -102,7 +102,7 @@ def test_resolve_width_height(tmp_path):
     assert _resolve_height(ctx(directory=str(tmp_path), file_name="img.png")) == "200"
 
 
-# --- EXIF (taken_at, camera_make, camera_model) ----------------------------------------------------------------
+# EXIF
 
 
 def _make_exif_image(tmp_path, *, datetime_original=None, make=None, model=None):
@@ -157,7 +157,7 @@ def test_resolve_camera_model_missing_raises(tmp_path):
         _resolve_camera_model(ctx(directory=str(tmp_path), file_name="img.jpg"))
 
 
-# --- GPS (latitude, longitude, altitude) ----------------------------------------------------------------
+# GPS
 
 
 def _make_gps_image(
@@ -236,7 +236,7 @@ def test_resolve_altitude_missing_raises(tmp_path):
         _resolve_altitude(ctx(directory=str(tmp_path), file_name="gps.jpg"))
 
 
-# --- video (mocked hachoir) ----------------------------------------------------------------
+# video
 
 
 @pytest.fixture

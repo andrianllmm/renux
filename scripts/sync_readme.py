@@ -1,8 +1,6 @@
-"""Regenerate the README's Tags section from `renux.tags`.
+"""Regenerate the README.
 
-Keeps the README in sync with the tags registry (`src/renux/tags.py`)
-without hand edits. Run directly, or let the `sync-readme` pre-commit hook
-run it automatically before each commit.
+- Keeps the README in sync with the tags registry (`src/renux/tags.py`).
 """
 
 import re

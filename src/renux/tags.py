@@ -2,13 +2,9 @@
 
 Every placeholder (`{counter}`, `{now(%Y)}`, ...) and every filter
 (`{name|slugify}`, `{name|upper}`, ...) is registered here, once, with the
-metadata needed both to resolve it and to document it. Adding or changing a
-placeholder or filter here is the *only* change needed — the CLI `--help`
-text, the TUI help screen, the syntax highlighter, and autocomplete
-suggestions are all generated from this registry, not maintained separately.
+metadata needed both to resolve it and to document it.
 
-To add a new filter, call `register_filter`. To add a new placeholder
-(a `{name}` or `{name(args)}` value provider), call `register_placeholder`.
+To add a new filter, call `register_filter`. To add a new placeholder, call `register_placeholder`.
 """
 
 from __future__ import annotations
@@ -123,7 +119,7 @@ def register_placeholder(
     )
 
 
-# --- Filters -----------------------------------------------------------------
+# Filters
 
 register_filter(
     "slugify",
@@ -168,7 +164,7 @@ register_filter("strip", str.strip, "Remove leading and trailing whitespace")
 register_filter("len", lambda s: str(len(s)), "Get the length of the string")
 
 
-# --- Placeholders --------------------------------------------------------------
+# Placeholders
 
 
 def _parse_counter_args(args: str) -> tuple[int, int, int]:
