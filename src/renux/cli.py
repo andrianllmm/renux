@@ -2,7 +2,7 @@ import os
 
 from renux.app import RenameApp
 from renux.parser import parse_args
-from renux.ui import CONSOLE, THEME
+from renux.ui import CONSOLE
 
 
 def main() -> None:
@@ -12,7 +12,7 @@ def main() -> None:
 
     directory = args.directory
     if not os.path.isdir(directory):
-        CONSOLE.print(f"Directory `{directory}` does not exist.", style=THEME.error)
+        CONSOLE.print(f"Directory `{directory}` does not exist.", style="red")
         return
     pattern = args.pattern
     replacement = args.replacement
