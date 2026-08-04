@@ -85,3 +85,32 @@ def test_headless_redo_nothing_to_redo(tmp_path, monkeypatch, capsys):
     main()
 
     assert "Nothing to redo." in capsys.readouterr().out
+
+
+def test_headless_exclude_skips_matching_files(tmp_path, monkeypatch):
+    """`--exclude` should skip files matching an exact name or glob pattern."""
+    _make_files(tmp_path, ["README.md", "Dockerfile", "foo1.txt", "foo2.txt"])
+
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "renux",
+            str(tmp_path),
+            "foo",
+            "bar",
+            "--yes",
+            "--exclude",
+            "README.md",
+            "--exclude",
+            "Dockerfile",
+        ],
+    )
+
+    main()
+
+    assert sorted(os.listdir(tmp_path)) == [
+        "Dockerfile",
+        "README.md",
+        "bar1.txt",
+        "bar2.txt",
+    ]

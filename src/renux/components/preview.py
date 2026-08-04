@@ -38,7 +38,7 @@ class Preview(Widget):
         theme = self.app.current_theme
         self._tree.root.remove_children()
         for old, new in renames:
-            disabled = old in self.app.disabled_files
+            disabled = old in self.app.disabled_files or self.app.is_excluded(old)
             text = Text()
             text.append(
                 "▢ " if disabled else "▣ ", "dim" if disabled else theme.primary

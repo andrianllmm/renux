@@ -2,17 +2,22 @@ import os
 
 from renux.app import RenameApp
 from renux.backup import load_backup, save_backup
-from renux.helpers.files import get_files
+from renux.helpers.files import filter_excluded, get_files
 from renux.parser import parse_args
 from renux.renamer import apply_renames, get_renames
 from renux.ui import CONSOLE
 
 
 def run_headless(
-    directory: str, pattern: str, replacement: str, options: dict, dry_run: bool
+    directory: str,
+    pattern: str,
+    replacement: str,
+    options: dict,
+    dry_run: bool,
+    exclude: list[str] | None = None,
 ) -> None:
     """Compute and (unless dry-run) apply renames without opening the TUI."""
-    files = get_files(directory)
+    files = filter_excluded(get_files(directory), exclude or [])
     renames = get_renames(files, directory, pattern, replacement, options)
     changed = [(old, new) for old, new in renames if old != new]
 
@@ -109,12 +114,23 @@ def main() -> None:
 
     # Headless mode: apply/preview the rename directly and exit, no TUI
     if args.yes or args.dry_run:
-        run_headless(directory, pattern, replacement, options, dry_run=args.dry_run)
+        run_headless(
+            directory,
+            pattern,
+            replacement,
+            options,
+            dry_run=args.dry_run,
+            exclude=args.exclude,
+        )
         return
 
     # Run the app
     app = RenameApp(
-        directory=directory, pattern=pattern, replacement=replacement, options=options
+        directory=directory,
+        pattern=pattern,
+        replacement=replacement,
+        options=options,
+        exclude=", ".join(args.exclude) if args.exclude else "",
     )
     app.run()
 

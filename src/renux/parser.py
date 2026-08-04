@@ -70,6 +70,13 @@ def parse_args() -> Namespace:
         help=f"Specifies where the renaming should be applied (default: {DEFAULT_OPTIONS['apply_to']}).",
     )
     parser.add_argument(
+        "--exclude",
+        action="append",
+        metavar="PATTERN",
+        default=None,
+        help="Exclude files matching PATTERN (exact name or glob, e.g. `README.md`, `*.log`). Repeatable.",
+    )
+    parser.add_argument(
         "-y",
         "--yes",
         action="store_true",

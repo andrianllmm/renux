@@ -81,6 +81,10 @@ renux [directory] [pattern] [replacement]
   - `name`: Rename the file's base name (default).
   - `ext`: Rename the file's extension.
   - `both`: Rename both the name and extension.
+- `--exclude PATTERN`: Exclude files matching `PATTERN` (exact name or glob,
+  e.g. `README.md`, `*.log`). Repeatable, e.g.
+  `--exclude README.md --exclude Dockerfile`. In the TUI, this is a
+  comma-separated field in the form.
 - `-y`, `--yes`: Apply the rename immediately without opening the TUI
   (headless mode, useful for scripts/CI).
 - `--dry-run`: Preview the rename without opening the TUI or changing any
