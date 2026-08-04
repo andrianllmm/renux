@@ -1,7 +1,14 @@
 import os
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 
 from renux.constants import APPLY_TO_OPTIONS, DEFAULT_OPTIONS
+from renux.tags_reference import render_text
+
+TAGS_HELP = f"""
+{render_text()}
+
+See https://github.com/andrianllmm/renux#tags for full details.
+"""
 
 
 class CustomParser(ArgumentParser):
@@ -14,6 +21,8 @@ def parse_args() -> Namespace:
     """Parse and return the command-line arguments."""
     parser = CustomParser(
         description="A command-line tool for bulk file renaming and organization using regex.",
+        epilog=TAGS_HELP,
+        formatter_class=RawDescriptionHelpFormatter,
     )
 
     parser.add_argument(

@@ -109,3 +109,18 @@ Checkbox {
 .text-warning {
   color: $text-warning;
 }
+
+HelpScreen {
+  align: center middle;
+}
+
+#help-container {
+  width: 70%;
+  max-width: 80;
+  height: auto;
+  max-height: 80%;
+  padding: 1 2;
+  background: $panel;
+  border: round $primary;
+  scrollbar-gutter: stable;
+}

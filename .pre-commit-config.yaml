@@ -27,3 +27,13 @@ repos:
     rev: v2.3.0
     hooks:
       - id: mypy
+  - repo: local
+    hooks:
+      - id: sync-readme
+        name: sync-readme
+        description: Regenerate README's Tags section from renux.tags
+        entry: python scripts/sync_readme.py
+        language: python
+        additional_dependencies: ["python-slugify", "pillow", "hachoir"]
+        files: ^(src/renux/tags(_reference)?\.py|README\.md)$
+        pass_filenames: false
