@@ -4,13 +4,13 @@ from textual.containers import VerticalScroll
 from textual.screen import ModalScreen
 from textual.widgets import Markdown
 
-from renux.markup_reference import render_markdown
+from renux.tags_reference import render_markdown
 
 HELP_MARKDOWN = render_markdown()
 
 
 class HelpScreen(ModalScreen[None]):
-    """Modal screen showing the markup syntax reference."""
+    """Modal screen showing the tags reference."""
 
     BINDINGS = [
         Binding("escape,f1", "dismiss(None)", "Close", priority=True),

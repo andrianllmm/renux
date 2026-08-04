@@ -20,6 +20,6 @@ BINDINGS: list[BindingType] = [
         "show_help",
         "Help",
         priority=True,
-        tooltip="Show markup syntax reference",
+        tooltip="Show tags reference",
     ),
 ]

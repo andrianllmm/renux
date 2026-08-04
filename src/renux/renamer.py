@@ -2,7 +2,7 @@ import os
 import re
 
 from renux.constants import DEFAULT_OPTIONS
-from renux.markup import FILTERS, PLACEHOLDERS, PlaceholderContext
+from renux.tags import FILTERS, PLACEHOLDERS, PlaceholderContext
 
 
 def _placeholder_pattern(*, stateful: bool) -> re.Pattern:
@@ -176,9 +176,9 @@ def process_date_placeholders(replacement: str, file_name: str, directory: str) 
 
 
 def apply_text_operations(text: str) -> str:
-    """Apply text transformations using markup like {<group>|<filter>}."""
-    # Pattern to match markup like {<group>|<filter>}
-    markup_pattern = re.compile(r"\{([^|]+)\|([^\}]+)\}")
+    """Apply text transformations using tag syntax like {<group>|<filter>}."""
+    # Pattern to match tag syntax like {<group>|<filter>}
+    tag_pattern = re.compile(r"\{([^|]+)\|([^\}]+)\}")
 
     def transform_match(match: re.Match) -> str:
         group = match.group(1)  # The group reference (e.g., \1)
@@ -188,4 +188,4 @@ def apply_text_operations(text: str) -> str:
         return filter_.func(group) if filter_ else group
 
     # Replace all transformations in the text
-    return markup_pattern.sub(transform_match, text)
+    return tag_pattern.sub(transform_match, text)

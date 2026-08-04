@@ -1,4 +1,4 @@
-"""Registry for renux's markup syntax: `{value}` and `{value|filter}`.
+"""Registry for renux's tag syntax: `{value}` and `{value|filter}`.
 
 Every placeholder (`{counter}`, `{now(%Y)}`, ...) and every filter
 (`{name|slugify}`, `{name|upper}`, ...) is registered here, once, with the

@@ -216,7 +216,7 @@ def test_process_counter_placeholder():
     assert result == "file_1_002.txt"
     assert counters == [2, 4]  # Counters should be incremented accordingly
 
-    # For file names with no counter markup
+    # For file names with no counter tag
     result2 = process_counter_placeholder("file_no_counter.txt", counters)
     assert result2 == "file_no_counter.txt"
     assert counters == [2, 4]

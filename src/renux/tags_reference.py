@@ -1,17 +1,17 @@
-"""Renders human-readable docs for renux's markup syntax from `renux.markup`.
+"""Renders human-readable docs for renux's tag syntax from `renux.tags`.
 
-This is the single place that turns the `renux.markup` registry into prose.
+This is the single place that turns the `renux.tags` registry into prose.
 `--help` (renux.parser) and the TUI help screen (renux.screens.help) both
-call this module, so a placeholder or filter added to `renux.markup` shows
+call this module, so a placeholder or filter added to `renux.tags` shows
 up everywhere without further changes.
 """
 
-from renux.markup import FILTERS, PLACEHOLDERS
+from renux.tags import FILTERS, PLACEHOLDERS
 
 
 def render_text() -> str:
-    """Render the markup reference as plain text, for `--help`."""
-    lines = ["markup syntax (usable in `replacement`):", ""]
+    """Render the tags reference as plain text, for `--help`."""
+    lines = ["tags syntax (usable in `replacement`):", ""]
 
     lines.append("  text transformations   {string|filter}")
     filters = ", ".join(FILTERS)
@@ -33,7 +33,7 @@ def render_text() -> str:
 
 
 def render_readme() -> str:
-    """Render the markup reference as the README's `**Markup**` bullet list."""
+    """Render the tags reference as the README's `**Tags**` bullet list."""
     lines = ["- **Text transformations**: `{string|filter}`"]
     for name, filt in FILTERS.items():
         lines.append(f"  - `{name}`: {filt.description}")
@@ -51,11 +51,11 @@ def render_readme() -> str:
 
 
 def render_markdown() -> str:
-    """Render the markup reference as Markdown, for the TUI help screen."""
+    """Render the tags reference as Markdown, for the TUI help screen."""
     lines = [
-        "# Markup Syntax",
+        "# Tags",
         "",
-        "Use these placeholders in the **Replace with** field.",
+        "Use these tags in the **Replace with** field.",
         "",
     ]
 

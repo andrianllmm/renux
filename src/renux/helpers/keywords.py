@@ -1,4 +1,4 @@
-from renux.markup import FILTERS, PLACEHOLDERS
+from renux.tags import FILTERS, PLACEHOLDERS
 
 
 def get_keywords() -> list[str]:

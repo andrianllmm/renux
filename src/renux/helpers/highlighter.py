@@ -3,7 +3,7 @@ import re
 from rich.highlighter import Highlighter
 from rich.text import Text
 
-from renux.markup import FILTERS, PLACEHOLDERS
+from renux.tags import FILTERS, PLACEHOLDERS
 
 _KEYWORDS = "|".join(re.escape(name) for name in PLACEHOLDERS)
 _OPERATIONS = "|".join(re.escape(name) for name in FILTERS)
