@@ -38,6 +38,8 @@ conventions.
 - **File size placeholders**: include a file's size, auto-scaled to the
   largest sensible unit or a specific one (bytes, KB, MB, GB).
 - **Image placeholders**: include an image's width and height in pixels.
+- **Video placeholders**: include a video's width, height, frame rate, and
+  duration.
 - **Backup and undo/redo**: save and restore changes to your files.
 - **File exclusion**: exclude files from renaming.
 - **Keyboard shortcuts**: use hotkeys to quickly apply actions and navigate the
@@ -116,6 +118,16 @@ renux [directory] [pattern] [replacement]
     The image's width in pixels.
   - **Height**: `{height}`
     The image's height in pixels.
+
+- **Video**
+  - **Video Width**: `{video_width}`
+    The video's width in pixels.
+  - **Video Height**: `{video_height}`
+    The video's height in pixels.
+  - **Frame Rate**: `{frame_rate}`
+    The video's frame rate. Not available for all containers (e.g. MP4).
+  - **Duration**: `{duration}`
+    The video's duration, in seconds.
 <!-- TAGS:END -->
 
 Run `renux --help` for more details.

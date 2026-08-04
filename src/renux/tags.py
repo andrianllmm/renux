@@ -19,6 +19,8 @@ import re
 from dataclasses import dataclass, field
 from typing import Callable
 
+from hachoir.metadata import extractMetadata
+from hachoir.parser import createParser
 from PIL import Image
 from slugify import slugify
 
@@ -74,7 +76,7 @@ PLACEHOLDERS: dict[str, Placeholder] = {}
 
 # Display order for placeholder categories in generated docs. A category not
 # listed here is appended after these, in first-registered order.
-CATEGORY_ORDER = ["General", "Date", "File", "Image"]
+CATEGORY_ORDER = ["General", "Date", "File", "Image", "Video"]
 
 
 def register_filter(name: str, func: Callable[[str], str], description: str) -> None:
@@ -325,4 +327,71 @@ register_placeholder(
     "The image's height in pixels.",
     syntax="{height}",
     category="Image",
+)
+
+
+def _video_metadata(path: str):
+    parser = createParser(path)
+    if not parser:
+        raise ValueError(f"Unable to parse video file: {path}")
+    with parser:
+        metadata = extractMetadata(parser)
+    if not metadata:
+        raise ValueError(f"No metadata found for video file: {path}")
+    return metadata
+
+
+def _resolve_video_width(ctx: PlaceholderContext) -> str:
+    path = os.path.join(ctx.directory, ctx.file_name)
+    metadata = _video_metadata(path)
+    return str(metadata.get("width"))
+
+
+def _resolve_video_height(ctx: PlaceholderContext) -> str:
+    path = os.path.join(ctx.directory, ctx.file_name)
+    metadata = _video_metadata(path)
+    return str(metadata.get("height"))
+
+
+def _resolve_frame_rate(ctx: PlaceholderContext) -> str:
+    path = os.path.join(ctx.directory, ctx.file_name)
+    metadata = _video_metadata(path)
+    fps = metadata.get("frame_rate")
+    return f"{fps:.2f}".rstrip("0").rstrip(".") + "fps"
+
+
+def _resolve_duration(ctx: PlaceholderContext) -> str:
+    path = os.path.join(ctx.directory, ctx.file_name)
+    metadata = _video_metadata(path)
+    duration = metadata.get("duration")
+    return f"{int(duration.total_seconds())}s"
+
+
+register_placeholder(
+    "video_width",
+    _resolve_video_width,
+    "The video's width in pixels.",
+    syntax="{video_width}",
+    category="Video",
+)
+register_placeholder(
+    "video_height",
+    _resolve_video_height,
+    "The video's height in pixels.",
+    syntax="{video_height}",
+    category="Video",
+)
+register_placeholder(
+    "frame_rate",
+    _resolve_frame_rate,
+    "The video's frame rate. Not available for all containers (e.g. MP4).",
+    syntax="{frame_rate}",
+    category="Video",
+)
+register_placeholder(
+    "duration",
+    _resolve_duration,
+    "The video's duration, in seconds.",
+    syntax="{duration}",
+    category="Video",
 )
