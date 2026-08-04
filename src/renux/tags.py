@@ -330,6 +330,68 @@ register_placeholder(
 )
 
 
+_EXIF_MAKE = 271
+_EXIF_MODEL = 272
+_EXIF_SUB_IFD = 0x8769
+_EXIF_DATETIME_ORIGINAL = 36867
+
+
+def _resolve_taken_at(ctx: PlaceholderContext) -> str:
+    path = os.path.join(ctx.directory, ctx.file_name)
+    with Image.open(path) as img:
+        raw = img.getexif().get_ifd(_EXIF_SUB_IFD).get(_EXIF_DATETIME_ORIGINAL)
+    if not raw:
+        raise ValueError(f"No EXIF capture date found: {path}")
+    taken_at = datetime.datetime.strptime(raw, "%Y:%m:%d %H:%M:%S")
+    return taken_at.strftime(ctx.args or "%Y-%m-%d")
+
+
+def _resolve_camera_make(ctx: PlaceholderContext) -> str:
+    path = os.path.join(ctx.directory, ctx.file_name)
+    with Image.open(path) as img:
+        make = img.getexif().get(_EXIF_MAKE)
+    if not make:
+        raise ValueError(f"No EXIF camera make found: {path}")
+    return str(make).strip()
+
+
+def _resolve_camera_model(ctx: PlaceholderContext) -> str:
+    path = os.path.join(ctx.directory, ctx.file_name)
+    with Image.open(path) as img:
+        model = img.getexif().get(_EXIF_MODEL)
+    if not model:
+        raise ValueError(f"No EXIF camera model found: {path}")
+    return str(model).strip()
+
+
+register_placeholder(
+    "taken_at",
+    _resolve_taken_at,
+    "The photo's capture date/time from EXIF metadata. Not available for "
+    "images without EXIF data (e.g. screenshots, re-exported/edited images).",
+    syntax="{taken_at(<format>)}",
+    category="Image",
+    example="{taken_at(%Y)}",
+    arg_suggestions=DATE_FORMAT_SUGGESTIONS,
+)
+register_placeholder(
+    "camera_make",
+    _resolve_camera_make,
+    "The camera manufacturer from EXIF metadata. Not available for images "
+    "without EXIF data.",
+    syntax="{camera_make}",
+    category="Image",
+)
+register_placeholder(
+    "camera_model",
+    _resolve_camera_model,
+    "The camera model from EXIF metadata. Not available for images "
+    "without EXIF data.",
+    syntax="{camera_model}",
+    category="Image",
+)
+
+
 def _video_metadata(path: str):
     parser = createParser(path)
     if not parser:

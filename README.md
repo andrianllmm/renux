@@ -37,7 +37,8 @@ conventions.
   date in filenames with customizable formats.
 - **File size placeholders**: include a file's size, auto-scaled to the
   largest sensible unit or a specific one (bytes, KB, MB, GB).
-- **Image placeholders**: include an image's width and height in pixels.
+- **Image placeholders**: include an image's width and height in pixels, plus
+  EXIF capture date and camera make/model when available.
 - **Video placeholders**: include a video's width, height, frame rate, and
   duration.
 - **Backup and undo/redo**: save and restore changes to your files.
@@ -118,6 +119,12 @@ renux [directory] [pattern] [replacement]
     The image's width in pixels.
   - **Height**: `{height}`
     The image's height in pixels.
+  - **Taken At**: `{taken_at(<format>)}`, e.g., `{taken_at(%Y)}`
+    The photo's capture date/time from EXIF metadata. Not available for images without EXIF data (e.g. screenshots, re-exported/edited images).
+  - **Camera Make**: `{camera_make}`
+    The camera manufacturer from EXIF metadata. Not available for images without EXIF data.
+  - **Camera Model**: `{camera_model}`
+    The camera model from EXIF metadata. Not available for images without EXIF data.
 
 - **Video**
   - **Video Width**: `{video_width}`
