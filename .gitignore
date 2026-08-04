@@ -175,3 +175,10 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# AI tools
+.claude
+.codex
+.cursor
+.cursorrules
+.gemini
