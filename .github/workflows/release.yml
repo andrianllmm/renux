@@ -29,17 +29,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install -U pip git-cliff twine
+          python -m pip install -U pip twine
           poetry config virtualenvs.in-project true
           poetry install --only main --no-interaction
-
-      - name: Generate release notes
-        run: git-cliff --latest --output RELEASE.md
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          body_path: RELEASE.md
+          generate_release_notes: true
 
       - name: Build
         run: |
