@@ -1,20 +1,11 @@
 import os
 from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 
-from renux.constants import APPLY_TO_OPTIONS, DEFAULT_OPTIONS, TEXT_OPERATIONS
+from renux.constants import APPLY_TO_OPTIONS, DEFAULT_OPTIONS
+from renux.markup_reference import render_text
 
 MARKUP_HELP = f"""
-markup syntax (usable in `replacement`):
-  text transformations   {{string|operation}}
-                          operations: {", ".join(TEXT_OPERATIONS)}
-  counter                {{counter(start=1,step=1,padding=1)}}
-  dates                  {{now|created_at|modified_at(<format>)}}
-                          <format> uses strftime codes, e.g. %Y
-
-examples:
-  renux my_files/ file "file_{{counter}}"
-  renux my_files/ file "file_{{created_at(%Y)}}"
-  renux my_files "(.*)" "{{filename|slugify}}" -r
+{render_text()}
 
 See https://github.com/andrianllmm/renux#markup for full details.
 """

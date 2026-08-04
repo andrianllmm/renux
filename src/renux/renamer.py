@@ -1,8 +1,17 @@
-import datetime
 import os
 import re
 
-from renux.constants import DEFAULT_OPTIONS, TEXT_OPERATIONS
+from renux.constants import DEFAULT_OPTIONS
+from renux.markup import FILTERS, PLACEHOLDERS, PlaceholderContext
+
+
+def _placeholder_pattern(*, stateful: bool) -> re.Pattern:
+    """Regex matching `{name}` / `{name(args)}` for placeholders with the given statefulness."""
+    names = [p.name for p in PLACEHOLDERS.values() if p.stateful == stateful]
+    if not names:
+        return re.compile(r"(?!)")  # never matches
+    alternation = "|".join(re.escape(name) for name in names)
+    return re.compile(rf"\{{({alternation})(?:\((.*?)\))?\}}")
 
 
 def apply_renames(directory: str, renames: list[tuple[str, str]]) -> None:
@@ -47,12 +56,13 @@ def get_renames(
     options: dict,
 ) -> list[tuple[str, str]]:
     """Rename multiple files in a directory based on specified search and replacement criteria."""
-    # Initialize counters for placeholder replacement
+    # Initialize counters for stateful placeholders (e.g. {counter(...)})
     counters = []
-    counter_pattern = r"\{counter(?:\((\d+)?,?\s*(\d+)?,?\s*(\d+)?\))?\}"
-    for match in re.findall(counter_pattern, replacement):
-        start = int(match[0] if len(match) > 0 and match[0] else 1)
-        counters.append(start)
+    for match in _placeholder_pattern(stateful=True).finditer(replacement):
+        name, args = match.group(1), match.group(2) or ""
+        placeholder = PLACEHOLDERS[name]
+        initial = placeholder.initial(args) if placeholder.initial else 1
+        counters.append(initial)
 
     # Store the original and new name of each file
     renames: list[tuple[str, str]] = []
@@ -127,66 +137,55 @@ def get_rename(
 
 
 def process_counter_placeholder(replacement: str, counters: list[int]) -> str:
-    """Replace counter placeholders in the replacement string."""
-    # Pattern to match counter markup like {counter(start, step, padding)}
-    counter_pattern = re.compile(r"\{counter(?:\((\d+)?,?\s*(\d+)?,?\s*(\d+)?\))?\}")
+    """Replace stateful placeholders (e.g. {counter(...)}) in the replacement string."""
+    pattern = _placeholder_pattern(stateful=True)
+    index = 0
 
-    # Replace each placeholder with the appropriate counter value
-    def replace_counter(match: re.Match, i: int) -> str:
-        step = int(match.group(2) or 1)
-        padding = int(match.group(3) or 1)
+    def replace(match: re.Match) -> str:
+        nonlocal index
+        name, args = match.group(1), match.group(2) or ""
+        placeholder = PLACEHOLDERS[name]
 
-        # Get the current counter, formatted with the appropriate padding
-        formatted_counter = str(counters[i]).zfill(padding)
+        current = counters[index]
+        ctx = PlaceholderContext(args=args, counter=current, file_name="", directory="")
+        result = placeholder.resolve(ctx)
 
-        # Increment the counter for the next placeholder
-        counters[i] += step
+        counters[index] = (
+            placeholder.advance(args, current) if placeholder.advance else current
+        )
+        index += 1
 
-        return formatted_counter
+        return result
 
-    # Go over the matches and process each one with its index
-    for i, match in enumerate(counter_pattern.finditer(replacement)):
-        replacement = replacement.replace(match.group(0), replace_counter(match, i), 1)
-
-    return replacement
+    return pattern.sub(replace, replacement)
 
 
 def process_date_placeholders(replacement: str, file_name: str, directory: str) -> str:
-    """Replace date-related placeholders with actual formatted dates."""
-    file_path = os.path.join(directory, file_name)
+    """Replace non-stateful placeholders (e.g. {now}, {created_at}) with resolved values."""
+    pattern = _placeholder_pattern(stateful=False)
 
-    # Pattern to match date markup like {now(%Y-%m-%d)}
-    date_pattern = re.compile(r"\{(now|created_at|modified_at)(?:\((.+)\))?\}")
+    def replace(match: re.Match) -> str:
+        name, args = match.group(1), match.group(2) or ""
+        placeholder = PLACEHOLDERS[name]
+        ctx = PlaceholderContext(
+            args=args, counter=None, file_name=file_name, directory=directory
+        )
+        return placeholder.resolve(ctx)
 
-    def replace_date(match):
-        date_type = match.group(1) or ""
-        date_format = match.group(2) or "%Y-%m-%d"
-
-        # Get the corresponding date
-        if date_type == "now":
-            return datetime.datetime.now().strftime(date_format)
-        elif date_type == "created_at":
-            created_time = os.path.getctime(file_path)
-            return datetime.datetime.fromtimestamp(created_time).strftime(date_format)
-        elif date_type == "modified_at":
-            modified_time = os.path.getmtime(file_path)
-            return datetime.datetime.fromtimestamp(modified_time).strftime(date_format)
-
-    # Replace all date-related placeholders with actual dates
-    return date_pattern.sub(replace_date, replacement)
+    return pattern.sub(replace, replacement)
 
 
 def apply_text_operations(text: str) -> str:
-    """Apply case transformations using markup like {<group>|<operation>}."""
-    # Pattern to match markup like {<group>|<operation>}
+    """Apply text transformations using markup like {<group>|<filter>}."""
+    # Pattern to match markup like {<group>|<filter>}
     markup_pattern = re.compile(r"\{([^|]+)\|([^\}]+)\}")
 
     def transform_match(match: re.Match) -> str:
         group = match.group(1)  # The group reference (e.g., \1)
-        operation_type = match.group(2)  # The operation to apply (e.g., slugify)
+        filter_name = match.group(2)  # The filter to apply (e.g., slugify)
 
-        operation = TEXT_OPERATIONS.get(operation_type, lambda s: s)
-        return operation(group)
+        filter_ = FILTERS.get(filter_name)
+        return filter_.func(group) if filter_ else group
 
     # Replace all transformations in the text
     return markup_pattern.sub(transform_match, text)

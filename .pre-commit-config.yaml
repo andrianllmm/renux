@@ -27,3 +27,13 @@ repos:
     rev: v2.3.0
     hooks:
       - id: mypy
+  - repo: local
+    hooks:
+      - id: sync-readme
+        name: sync-readme
+        description: Regenerate README's Markup section from renux.markup
+        entry: python scripts/sync_readme.py
+        language: python
+        additional_dependencies: ["python-slugify"]
+        files: ^(src/renux/markup(_reference)?\.py|README\.md)$
+        pass_filenames: false

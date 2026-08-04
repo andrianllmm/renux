@@ -3,12 +3,10 @@ import re
 from rich.highlighter import Highlighter
 from rich.text import Text
 
-from renux.constants import COUNTER_KEYWORD, DATE_KEYWORDS, TEXT_OPERATIONS
+from renux.markup import FILTERS, PLACEHOLDERS
 
-_KEYWORDS = "|".join(
-    re.escape(keyword) for keyword in [COUNTER_KEYWORD, *DATE_KEYWORDS]
-)
-_OPERATIONS = "|".join(re.escape(operation) for operation in TEXT_OPERATIONS)
+_KEYWORDS = "|".join(re.escape(name) for name in PLACEHOLDERS)
+_OPERATIONS = "|".join(re.escape(name) for name in FILTERS)
 
 TOKEN_PATTERN = re.compile(
     r"(?P<punctuation>[{}()])"
