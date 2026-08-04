@@ -10,6 +10,7 @@ from renux.components import Form, Preview
 from renux.constants import DEFAULT_OPTIONS
 from renux.helpers.files import get_files
 from renux.renamer import apply_renames, get_renames
+from renux.screens import HelpScreen
 from renux.ui import CSS_PATH, THEME
 
 
@@ -82,6 +83,9 @@ class RenameApp(App):
 
     def action_toggle_regex(self) -> None:
         self.query_one("#regex", Checkbox).toggle()
+
+    def action_show_help(self) -> None:
+        self.push_screen(HelpScreen())
 
     def action_clear_form(self) -> None:
         self.pattern = ""

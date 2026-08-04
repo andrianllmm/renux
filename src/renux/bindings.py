@@ -15,4 +15,11 @@ BINDINGS: list[BindingType] = [
         "ctrl+l", "clear_form", "Clear", priority=True, tooltip="Clear form values"
     ),
     Binding("ctrl+r", "toggle_regex", "Regex", priority=True, tooltip="Toggle regex"),
+    Binding(
+        "f1",
+        "show_help",
+        "Help",
+        priority=True,
+        tooltip="Show markup syntax reference",
+    ),
 ]
