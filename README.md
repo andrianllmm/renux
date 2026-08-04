@@ -58,6 +58,16 @@ pipx install renux
 
 Alternatively, you can use [pip](https://pip.pypa.io/en/stable/).
 
+### AI Agent Skill
+
+If you use an AI coding agent (Claude Code, etc.), you can install a
+[skill](skills/renux) that teaches it how to drive `renux` for bulk-renaming
+tasks:
+
+```sh
+npx skills add https://github.com/andrianllmm/renux/tree/main/skills/renux
+```
+
 ## Usage
 
 ```sh
