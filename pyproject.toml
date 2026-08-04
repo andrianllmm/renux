@@ -5,14 +5,33 @@ description = "A terminal-based bulk file renamer with a TUI"
 authors = [
     {name = "Andrian Lloyd Maagma", email = "maagmaandrian@gmail.com"}
 ]
-license = {text = "MIT"}
+license = "MIT"
 readme = "README.md"
 requires-python = ">=3.10,<4.0.0"
+keywords = ["rename", "bulk-rename", "cli", "tui", "files", "regex"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Terminals",
+    "Topic :: Utilities",
+]
 dependencies = [
     "python-slugify (>=8.0.4,<9.0.0)",
     "rich (>=14.0.0,<15.0.0)",
     "textual (>=3.3.0,<4.0.0)",
 ]
+
+[project.urls]
+Homepage = "https://github.com/andrianllmm/renux"
+Repository = "https://github.com/andrianllmm/renux"
+Issues = "https://github.com/andrianllmm/renux/issues"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
