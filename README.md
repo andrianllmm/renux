@@ -92,14 +92,17 @@ renux [directory] [pattern] [replacement]
   - `strip`: Remove leading and trailing whitespace
   - `len`: Get the length of the string
 
-- **Counter**: `{counter(start=1,step=1,padding=1)}`, e.g., `{counter(1,2,3)}`
-  Insert an incrementing counter. Each placeholder occurrence tracks its own sequence, advancing by `step` after every file.
-- **Now**: `{now(<format>)}`, e.g., `{now(%Y)}`
-  The current date/time.
-- **Created At**: `{created_at(<format>)}`
-  The file's creation date/time.
-- **Modified At**: `{modified_at(<format>)}`
-  The file's last-modified date/time.
+- **General**
+  - **Counter**: `{counter(start=1,step=1,padding=1)}`, e.g., `{counter(1,2,3)}`
+    Insert an incrementing counter. Each placeholder occurrence tracks its own sequence, advancing by `step` after every file.
+
+- **Date**
+  - **Now**: `{now(<format>)}`, e.g., `{now(%Y)}`
+    The current date/time.
+  - **Created At**: `{created_at(<format>)}`
+    The file's creation date/time.
+  - **Modified At**: `{modified_at(<format>)}`
+    The file's last-modified date/time.
 <!-- TAGS:END -->
 
 Run `renux --help` for more details.

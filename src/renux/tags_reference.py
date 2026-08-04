@@ -6,7 +6,7 @@ call this module, so a placeholder or filter added to `renux.tags` shows
 up everywhere without further changes.
 """
 
-from renux.tags import FILTERS, PLACEHOLDERS
+from renux.tags import FILTERS, PLACEHOLDERS, grouped_placeholders
 
 
 def render_text() -> str:
@@ -16,11 +16,13 @@ def render_text() -> str:
     lines.append("  text transformations   {string|filter}")
     filters = ", ".join(FILTERS)
     lines.append(f"                          filters: {filters}")
-    lines.append("")
 
-    for placeholder in PLACEHOLDERS.values():
-        lines.append(f"  {placeholder.syntax}")
-        lines.append(f"      {placeholder.description}")
+    for category, placeholders in grouped_placeholders().items():
+        lines.append("")
+        lines.append(f"  {category}")
+        for placeholder in placeholders:
+            lines.append(f"    {placeholder.syntax}")
+            lines.append(f"        {placeholder.description}")
 
     lines.append("")
     lines.append("examples:")
@@ -37,15 +39,17 @@ def render_readme() -> str:
     lines = ["- **Text transformations**: `{string|filter}`"]
     for name, filt in FILTERS.items():
         lines.append(f"  - `{name}`: {filt.description}")
-    lines.append("")
 
-    for placeholder in PLACEHOLDERS.values():
-        label = placeholder.name.replace("_", " ").title()
-        line = f"- **{label}**: `{placeholder.syntax}`"
-        if placeholder.example:
-            line += f", e.g., `{placeholder.example}`"
-        lines.append(line)
-        lines.append(f"  {placeholder.description}")
+    for category, placeholders in grouped_placeholders().items():
+        lines.append("")
+        lines.append(f"- **{category}**")
+        for placeholder in placeholders:
+            label = placeholder.name.replace("_", " ").title()
+            line = f"  - **{label}**: `{placeholder.syntax}`"
+            if placeholder.example:
+                line += f", e.g., `{placeholder.example}`"
+            lines.append(line)
+            lines.append(f"    {placeholder.description}")
 
     return "\n".join(lines)
 
@@ -66,15 +70,18 @@ def render_markdown() -> str:
         lines.append(f"- `{name}`: {filt.description}")
     lines.append("")
 
-    for placeholder in PLACEHOLDERS.values():
-        lines.append(f"## {placeholder.name}")
-        lines.append(f"`{placeholder.syntax}`")
+    for category, placeholders in grouped_placeholders().items():
+        lines.append(f"## {category}")
         lines.append("")
-        lines.append(placeholder.description)
-        if placeholder.example:
+        for placeholder in placeholders:
+            lines.append(f"### {placeholder.name}")
+            lines.append(f"`{placeholder.syntax}`")
             lines.append("")
-            lines.append(f"e.g. `{placeholder.example}`")
-        lines.append("")
+            lines.append(placeholder.description)
+            if placeholder.example:
+                lines.append("")
+                lines.append(f"e.g. `{placeholder.example}`")
+            lines.append("")
 
     lines.append("## Examples")
     for placeholder in PLACEHOLDERS.values():

@@ -56,6 +56,7 @@ class Placeholder:
     description: str
     syntax: str
     resolve: Callable[[PlaceholderContext], str]
+    category: str
     example: str | None = None
     # Suggested `(args)` strings for autocomplete, e.g. "(1,1,0)" or "(%Y)".
     arg_suggestions: list[str] = field(default_factory=list)
@@ -70,10 +71,26 @@ class Placeholder:
 FILTERS: dict[str, Filter] = {}
 PLACEHOLDERS: dict[str, Placeholder] = {}
 
+# Display order for placeholder categories in generated docs. A category not
+# listed here is appended after these, in first-registered order.
+CATEGORY_ORDER = ["General", "Date"]
+
 
 def register_filter(name: str, func: Callable[[str], str], description: str) -> None:
     """Register a `{value|name}` text transformation."""
     FILTERS[name] = Filter(name, func, description)
+
+
+def grouped_placeholders() -> dict[str, list[Placeholder]]:
+    """Group placeholders by category, ordered per `CATEGORY_ORDER` then by
+    first-registration order for any category not listed there."""
+    groups: dict[str, list[Placeholder]] = {}
+    for placeholder in PLACEHOLDERS.values():
+        groups.setdefault(placeholder.category, []).append(placeholder)
+
+    ordered = {c: groups[c] for c in CATEGORY_ORDER if c in groups}
+    ordered.update({c: g for c, g in groups.items() if c not in ordered})
+    return ordered
 
 
 def register_placeholder(
@@ -81,6 +98,7 @@ def register_placeholder(
     resolve: Callable[[PlaceholderContext], str],
     description: str,
     syntax: str,
+    category: str,
     example: str | None = None,
     arg_suggestions: list[str] | None = None,
     stateful: bool = False,
@@ -93,6 +111,7 @@ def register_placeholder(
         description=description,
         syntax=syntax,
         resolve=resolve,
+        category=category,
         example=example,
         arg_suggestions=arg_suggestions or [],
         stateful=stateful,
@@ -179,6 +198,7 @@ register_placeholder(
     "Insert an incrementing counter. Each placeholder occurrence tracks its "
     "own sequence, advancing by `step` after every file.",
     syntax="{counter(start=1,step=1,padding=1)}",
+    category="General",
     example="{counter(1,2,3)}",
     arg_suggestions=["", "(1,1,0)", "(0,1,0)"],
     stateful=True,
@@ -221,6 +241,7 @@ register_placeholder(
     _resolve_now,
     "The current date/time.",
     syntax="{now(<format>)}",
+    category="Date",
     example="{now(%Y)}",
     arg_suggestions=DATE_FORMAT_SUGGESTIONS,
 )
@@ -229,6 +250,7 @@ register_placeholder(
     _resolve_created_at,
     "The file's creation date/time.",
     syntax="{created_at(<format>)}",
+    category="Date",
     arg_suggestions=DATE_FORMAT_SUGGESTIONS,
 )
 register_placeholder(
@@ -236,5 +258,6 @@ register_placeholder(
     _resolve_modified_at,
     "The file's last-modified date/time.",
     syntax="{modified_at(<format>)}",
+    category="Date",
     arg_suggestions=DATE_FORMAT_SUGGESTIONS,
 )
