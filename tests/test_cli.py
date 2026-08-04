@@ -114,3 +114,28 @@ def test_headless_exclude_skips_matching_files(tmp_path, monkeypatch):
         "bar1.txt",
         "bar2.txt",
     ]
+
+
+def test_headless_exclude_negation_reincludes_file(tmp_path, monkeypatch):
+    """A `!`-prefixed exclude pattern should re-include a file matched by an
+    earlier pattern, gitignore-style."""
+    _make_files(tmp_path, ["foo1.txt", "foo2.txt", "foo3.txt"])
+
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "renux",
+            str(tmp_path),
+            "foo",
+            "bar",
+            "--yes",
+            "--exclude",
+            "*.txt",
+            "--exclude",
+            "!foo1.txt",
+        ],
+    )
+
+    main()
+
+    assert sorted(os.listdir(tmp_path)) == ["bar1.txt", "foo2.txt", "foo3.txt"]

@@ -85,6 +85,11 @@ renux [directory] [pattern] [replacement]
   e.g. `README.md`, `*.log`). Repeatable, e.g.
   `--exclude README.md --exclude Dockerfile`. In the TUI, this is a
   comma-separated field in the form.
+
+  Patterns are evaluated in order, gitignore-style: prefix a pattern with `!`
+  to re-include a file matched by an earlier pattern, e.g.
+  `--exclude "*.txt" --exclude "!foo1.txt"` excludes all `.txt` files except
+  `foo1.txt`.
 - `-y`, `--yes`: Apply the rename immediately without opening the TUI
   (headless mode, useful for scripts/CI).
 - `--dry-run`: Preview the rename without opening the TUI or changing any

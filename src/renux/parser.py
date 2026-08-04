@@ -74,7 +74,7 @@ def parse_args() -> Namespace:
         action="append",
         metavar="PATTERN",
         default=None,
-        help="Exclude files matching PATTERN (exact name or glob, e.g. `README.md`, `*.log`). Repeatable.",
+        help="Exclude files matching PATTERN (exact name or glob, e.g. `README.md`, `*.log`). Repeatable; prefix with `!` to re-include a file matched by an earlier pattern.",
     )
     parser.add_argument(
         "-y",
