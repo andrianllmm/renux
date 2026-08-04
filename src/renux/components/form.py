@@ -1,7 +1,6 @@
 import os
 from typing import TYPE_CHECKING
 
-from rich.highlighter import RegexHighlighter
 from textual.containers import Horizontal
 from textual.suggester import SuggestFromList
 from textual.validation import Number
@@ -9,6 +8,7 @@ from textual.widget import Widget
 from textual.widgets import Checkbox, Input, Label, Select
 
 from renux.constants import APPLY_TO_OPTIONS
+from renux.helpers.highlighter import TokenHighlighter
 from renux.helpers.keywords import get_keywords
 
 if TYPE_CHECKING:
@@ -21,12 +21,19 @@ class Form(Widget):
     app: "RenameApp"
 
     def compose(self):
+        theme = self.app.current_theme
+        highlighter = TokenHighlighter(
+            keyword=theme.accent,
+            operation=theme.primary,
+            punctuation="dim",
+        )
+
         yield Input(
             id="pattern",
             value=self.app.pattern,
             placeholder="Search for",
             compact=True,
-            highlighter=RegexHighlighter(),
+            highlighter=highlighter,
             suggester=SuggestFromList(self.app.files, case_sensitive=False),
         )
         yield Input(
@@ -34,6 +41,7 @@ class Form(Widget):
             value=self.app.replacement,
             placeholder="Replace with",
             compact=True,
+            highlighter=highlighter,
             suggester=SuggestFromList(
                 self.app.files + get_keywords(), case_sensitive=False
             ),
