@@ -76,7 +76,7 @@ PLACEHOLDERS: dict[str, Placeholder] = {}
 
 # Display order for placeholder categories in generated docs. A category not
 # listed here is appended after these, in first-registered order.
-CATEGORY_ORDER = ["General", "Date", "File", "Image", "Video"]
+CATEGORY_ORDER = ["General", "Date", "File", "Image", "Location", "Video"]
 
 
 def register_filter(name: str, func: Callable[[str], str], description: str) -> None:
@@ -389,6 +389,82 @@ register_placeholder(
     "without EXIF data.",
     syntax="{camera_model}",
     category="Image",
+)
+
+
+_EXIF_GPS_IFD = 0x8825
+_GPS_LAT_REF = 1
+_GPS_LAT = 2
+_GPS_LON_REF = 3
+_GPS_LON = 4
+_GPS_ALT_REF = 5
+_GPS_ALT = 6
+
+
+def _gps_ifd(path: str):
+    with Image.open(path) as img:
+        return img.getexif().get_ifd(_EXIF_GPS_IFD)
+
+
+def _dms_to_decimal(dms: tuple[float, float, float], ref: str) -> float:
+    degrees, minutes, seconds = dms
+    decimal = float(degrees) + float(minutes) / 60 + float(seconds) / 3600
+    return -decimal if ref in ("S", "W") else decimal
+
+
+def _resolve_latitude(ctx: PlaceholderContext) -> str:
+    path = os.path.join(ctx.directory, ctx.file_name)
+    gps = _gps_ifd(path)
+    lat, lat_ref = gps.get(_GPS_LAT), gps.get(_GPS_LAT_REF)
+    if not lat or not lat_ref:
+        raise ValueError(f"No EXIF GPS latitude found: {path}")
+    return f"{_dms_to_decimal(lat, lat_ref):.6f}"
+
+
+def _resolve_longitude(ctx: PlaceholderContext) -> str:
+    path = os.path.join(ctx.directory, ctx.file_name)
+    gps = _gps_ifd(path)
+    lon, lon_ref = gps.get(_GPS_LON), gps.get(_GPS_LON_REF)
+    if not lon or not lon_ref:
+        raise ValueError(f"No EXIF GPS longitude found: {path}")
+    return f"{_dms_to_decimal(lon, lon_ref):.6f}"
+
+
+def _resolve_altitude(ctx: PlaceholderContext) -> str:
+    path = os.path.join(ctx.directory, ctx.file_name)
+    gps = _gps_ifd(path)
+    alt = gps.get(_GPS_ALT)
+    if alt is None:
+        raise ValueError(f"No EXIF GPS altitude found: {path}")
+    alt_ref = gps.get(_GPS_ALT_REF, 0)
+    below_sea_level = alt_ref == 1 or alt_ref == b"\x01"
+    value = -float(alt) if below_sea_level else float(alt)
+    return f"{value:.1f}m"
+
+
+register_placeholder(
+    "latitude",
+    _resolve_latitude,
+    "The photo's GPS latitude in decimal degrees. Not available for images "
+    "without GPS EXIF data.",
+    syntax="{latitude}",
+    category="Location",
+)
+register_placeholder(
+    "longitude",
+    _resolve_longitude,
+    "The photo's GPS longitude in decimal degrees. Not available for images "
+    "without GPS EXIF data.",
+    syntax="{longitude}",
+    category="Location",
+)
+register_placeholder(
+    "altitude",
+    _resolve_altitude,
+    "The photo's GPS altitude in meters. Not available for images without "
+    "GPS EXIF data.",
+    syntax="{altitude}",
+    category="Location",
 )
 
 

@@ -39,6 +39,8 @@ conventions.
   largest sensible unit or a specific one (bytes, KB, MB, GB).
 - **Image placeholders**: include an image's width and height in pixels, plus
   EXIF capture date and camera make/model when available.
+- **Location placeholders**: include a photo's GPS latitude, longitude, and
+  altitude from EXIF data when available.
 - **Video placeholders**: include a video's width, height, frame rate, and
   duration.
 - **Backup and undo/redo**: save and restore changes to your files.
@@ -125,6 +127,14 @@ renux [directory] [pattern] [replacement]
     The camera manufacturer from EXIF metadata. Not available for images without EXIF data.
   - **Camera Model**: `{camera_model}`
     The camera model from EXIF metadata. Not available for images without EXIF data.
+
+- **Location**
+  - **Latitude**: `{latitude}`
+    The photo's GPS latitude in decimal degrees. Not available for images without GPS EXIF data.
+  - **Longitude**: `{longitude}`
+    The photo's GPS longitude in decimal degrees. Not available for images without GPS EXIF data.
+  - **Altitude**: `{altitude}`
+    The photo's GPS altitude in meters. Not available for images without GPS EXIF data.
 
 - **Video**
   - **Video Width**: `{video_width}`
