@@ -193,6 +193,7 @@ def test_get_rename():
         ("{  filename  |strip}", "filename"),
         ("{filename|len}", "8"),
         ("{filename|invalid}", "filename"),
+        ("{filename|upper|reverse}", "EMANELIF"),
     ],
 )
 def test_apply_text_operations(replacement, expected_output):
@@ -221,6 +222,11 @@ def test_process_counter_placeholder():
     assert result2 == "file_no_counter.txt"
     assert counters == [2, 4]
 
+    # A filter chained onto a placeholder is applied to its resolved value
+    counters = [1]
+    result3 = process_counter_placeholder("file_{counter(1,1,3)|upper}", counters)
+    assert result3 == "file_001"
+
 
 def test_process_date_placeholders(mock_os_functions):
     """
@@ -247,3 +253,7 @@ def test_process_date_placeholders(mock_os_functions):
     current_date = datetime.now().strftime("%Y-%m-%d")
     result = process_date_placeholders("{now(%Y-%m-%d)}", "file1.txt", ".")
     assert result == current_date
+
+    # A filter chained onto a placeholder is applied to its resolved value
+    result = process_date_placeholders("{created_at(%Y-%m-%d)|upper}", "file1.txt", ".")
+    assert result == "2020-01-01"

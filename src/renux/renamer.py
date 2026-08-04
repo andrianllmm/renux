@@ -6,12 +6,24 @@ from renux.tags import FILTERS, PLACEHOLDERS, PlaceholderContext
 
 
 def _placeholder_pattern(*, stateful: bool) -> re.Pattern:
-    """Regex matching `{name}` / `{name(args)}` for placeholders with the given statefulness."""
+    """Regex matching `{name}`, `{name(args)}`, or `{name(args)|filter...}`
+    for placeholders with the given statefulness."""
     names = [p.name for p in PLACEHOLDERS.values() if p.stateful == stateful]
     if not names:
         return re.compile(r"(?!)")  # never matches
     alternation = "|".join(re.escape(name) for name in names)
-    return re.compile(rf"\{{({alternation})(?:\((.*?)\))?\}}")
+    return re.compile(rf"\{{({alternation})(?:\((.*?)\))?((?:\|[^{{}}]+)*)\}}")
+
+
+def apply_filters(value: str, filter_chain: str) -> str:
+    """Apply a `|filter1|filter2` chain to `value`, skipping unknown filter names."""
+    for name in filter_chain.split("|"):
+        if not name:
+            continue
+        filt = FILTERS.get(name)
+        if filt:
+            value = filt.func(value)
+    return value
 
 
 def apply_renames(directory: str, renames: list[tuple[str, str]]) -> None:
@@ -143,7 +155,11 @@ def process_counter_placeholder(replacement: str, counters: list[int]) -> str:
 
     def replace(match: re.Match) -> str:
         nonlocal index
-        name, args = match.group(1), match.group(2) or ""
+        name, args, filter_chain = (
+            match.group(1),
+            match.group(2) or "",
+            match.group(3) or "",
+        )
         placeholder = PLACEHOLDERS[name]
 
         current = counters[index]
@@ -155,7 +171,7 @@ def process_counter_placeholder(replacement: str, counters: list[int]) -> str:
         )
         index += 1
 
-        return result
+        return apply_filters(result, filter_chain)
 
     return pattern.sub(replace, replacement)
 
@@ -165,27 +181,31 @@ def process_date_placeholders(replacement: str, file_name: str, directory: str) 
     pattern = _placeholder_pattern(stateful=False)
 
     def replace(match: re.Match) -> str:
-        name, args = match.group(1), match.group(2) or ""
+        name, args, filter_chain = (
+            match.group(1),
+            match.group(2) or "",
+            match.group(3) or "",
+        )
         placeholder = PLACEHOLDERS[name]
         ctx = PlaceholderContext(
             args=args, counter=None, file_name=file_name, directory=directory
         )
-        return placeholder.resolve(ctx)
+        result = placeholder.resolve(ctx)
+        return apply_filters(result, filter_chain)
 
     return pattern.sub(replace, replacement)
 
 
 def apply_text_operations(text: str) -> str:
     """Apply text transformations using tag syntax like {<group>|<filter>}."""
-    # Pattern to match tag syntax like {<group>|<filter>}
-    tag_pattern = re.compile(r"\{([^|]+)\|([^\}]+)\}")
+    # Pattern to match tag syntax like {<group>|<filter1>|<filter2>...}
+    tag_pattern = re.compile(r"\{([^{}|]+)((?:\|[^{}|]+)+)\}")
 
     def transform_match(match: re.Match) -> str:
         group = match.group(1)  # The group reference (e.g., \1)
-        filter_name = match.group(2)  # The filter to apply (e.g., slugify)
+        filter_chain = match.group(2)  # The filter(s) to apply (e.g., |slugify)
 
-        filter_ = FILTERS.get(filter_name)
-        return filter_.func(group) if filter_ else group
+        return apply_filters(group, filter_chain)
 
     # Replace all transformations in the text
     return tag_pattern.sub(transform_match, text)
