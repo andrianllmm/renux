@@ -6,7 +6,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/andrianllmm/renux?style=flat&labelColor=black&color=black)](https://github.com/andrianllmm/renux/stargazers)
 [![CI](https://img.shields.io/github/actions/workflow/status/andrianllmm/renux/ci.yml?labelColor=black&color=black&label=CI)](https://github.com/andrianllmm/renux/actions/workflows/ci.yml)
 
-# renux
+### renux
 
 **A terminal-based bulk file renamer with a TUI**
 
@@ -87,18 +87,18 @@ renux [directory] [pattern] [replacement]
 - `-r`, `--regex`: Treats the pattern as a regular expression (default is True).
 - `--case-sensitive`: Makes the search case-sensitive (default is False).
 - `--apply-to`: Specifies where the renaming should be applied. Options are:
-  - `name`: Rename the file's base name (default).
-  - `ext`: Rename the file's extension.
-  - `both`: Rename both the name and extension.
+- `name`: Rename the file's base name (default).
+- `ext`: Rename the file's extension.
+- `both`: Rename both the name and extension.
 - `--exclude PATTERN`: Exclude files matching `PATTERN` (exact name or glob,
   e.g. `README.md`, `*.log`). Repeatable, e.g.
   `--exclude README.md --exclude Dockerfile`. In the TUI, this is a
   comma-separated field in the form.
 
-  Patterns are evaluated in order, gitignore-style: prefix a pattern with `!`
-  to re-include a file matched by an earlier pattern, e.g.
-  `--exclude "*.txt" --exclude "!foo1.txt"` excludes all `.txt` files except
-  `foo1.txt`.
+Patterns are evaluated in order, gitignore-style: prefix a pattern with `!`
+to re-include a file matched by an earlier pattern, e.g.
+`--exclude "*.txt" --exclude "!foo1.txt"` excludes all `.txt` files except
+`foo1.txt`.
 
 - `-y`, `--yes`: Apply the rename immediately without opening the TUI
   (headless mode, useful for scripts/CI).
