@@ -1,17 +1,16 @@
 <div align="center">
 
-[![PyPI version](https://img.shields.io/pypi/v/renux.svg?style=flat)](https://pypi.org/project/renux/)
-[![Downloads](https://pepy.tech/badge/renux)](https://pepy.tech/project/renux)
-[![License](https://img.shields.io/github/license/andrianllmm/renux?style=flat)](https://github.com/andrianllmm/renux/blob/main/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/andrianllmm/renux?style=flat)](https://github.com/andrianllmm/renux/stargazers)
-[![CI](https://github.com/andrianllmm/renux/actions/workflows/ci.yml/badge.svg)](https://github.com/andrianllmm/renux/actions/workflows/ci.yml)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/andrianllmm/renux/main.svg)](https://results.pre-commit.ci/latest/github/andrianllmm/renux/main)
+[![PyPI version](https://img.shields.io/pypi/v/renux?style=flat&labelColor=black&color=black)](https://pypi.org/project/renux/)
+[![Downloads](https://static.pepy.tech/personalized-badge/renux?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=BLACK&left_text=downloads)](https://pepy.tech/projects/renux)
+[![License](https://img.shields.io/github/license/andrianllmm/renux?style=flat&labelColor=black&color=black)](https://github.com/andrianllmm/renux/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/andrianllmm/renux?style=flat&labelColor=black&color=black)](https://github.com/andrianllmm/renux/stargazers)
+[![CI](https://img.shields.io/github/actions/workflow/status/andrianllmm/renux/ci.yml?labelColor=black&color=black&label=CI)](https://github.com/andrianllmm/renux/actions/workflows/ci.yml)
 
 # renux
 
 **A terminal-based bulk file renamer with a TUI**
 
-<img src="https://github.com/andrianllmm/renux/raw/main/docs/images/preview.gif" alt="Preview" width="500">
+<img src="https://github.com/andrianllmm/renux/raw/main/docs/images/demo.gif" alt="Preview" width="500">
 
 </div>
 
@@ -100,6 +99,7 @@ renux [directory] [pattern] [replacement]
   to re-include a file matched by an earlier pattern, e.g.
   `--exclude "*.txt" --exclude "!foo1.txt"` excludes all `.txt` files except
   `foo1.txt`.
+
 - `-y`, `--yes`: Apply the rename immediately without opening the TUI
   (headless mode, useful for scripts/CI).
 - `--dry-run`: Preview the rename without opening the TUI or changing any

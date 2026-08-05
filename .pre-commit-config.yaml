@@ -10,23 +10,29 @@ repos:
       - id: mixed-line-ending
       - id: check-ast
       - id: check-added-large-files
+        args: ["--maxkb=10000"]
+
   - repo: https://github.com/PyCQA/isort
     rev: 9.0.0b1
     hooks:
       - id: isort
+
   - repo: https://github.com/psf/black-pre-commit-mirror
     rev: 26.5.1
     hooks:
       - id: black
+
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.17.0
     hooks:
       - id: commitizen
         stages: [commit-msg]
+
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v2.3.0
     hooks:
       - id: mypy
+
   - repo: local
     hooks:
       - id: sync-readme
@@ -34,6 +40,9 @@ repos:
         description: Regenerate README's Tags section from renux.tags
         entry: python scripts/sync_readme.py
         language: python
-        additional_dependencies: ["python-slugify", "pillow", "hachoir"]
+        additional_dependencies:
+          - python-slugify
+          - pillow
+          - hachoir
         files: ^(src/renux/tags(_reference)?\.py|README\.md)$
         pass_filenames: false
