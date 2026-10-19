@@ -13,17 +13,17 @@ repos:
         args: ["--maxkb=10000"]
 
   - repo: https://github.com/PyCQA/isort
-    rev: 9.0.2
+    rev: 10.0.0b1
     hooks:
       - id: isort
 
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.10.0
+    rev: 26.10.1
     hooks:
       - id: black
 
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.19.1
+    rev: v4.19.2
     hooks:
       - id: commitizen
         stages: [commit-msg]
