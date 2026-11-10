@@ -35,9 +35,7 @@ def test_headless_yes_applies_rename(tmp_path, monkeypatch):
 def test_missing_directory_exits_nonzero(tmp_path, monkeypatch, capsys):
     """A nonexistent directory should fail with a nonzero exit code."""
     missing = tmp_path / "does-not-exist"
-    monkeypatch.setattr(
-        "sys.argv", ["renux", str(missing), "foo", "bar", "--yes"]
-    )
+    monkeypatch.setattr("sys.argv", ["renux", str(missing), "foo", "bar", "--yes"])
 
     with pytest.raises(SystemExit) as exc_info:
         main()
