@@ -94,7 +94,7 @@ def main() -> None:
     directory = args.directory
     if not os.path.isdir(directory):
         CONSOLE.print(f"Directory `{directory}` does not exist.", style="red")
-        return
+        raise SystemExit(2)
     # Headless mode: undo/redo the last rename directly and exit, no TUI
     if args.undo:
         run_undo(directory)
