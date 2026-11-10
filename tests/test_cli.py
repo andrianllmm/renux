@@ -1,5 +1,7 @@
 import os
 
+import pytest
+
 from renux.cli import main
 
 
@@ -28,6 +30,20 @@ def test_headless_yes_applies_rename(tmp_path, monkeypatch):
     main()
 
     assert sorted(os.listdir(tmp_path)) == ["bar1.txt", "bar2.txt"]
+
+
+def test_missing_directory_exits_nonzero(tmp_path, monkeypatch, capsys):
+    """A nonexistent directory should fail with a nonzero exit code."""
+    missing = tmp_path / "does-not-exist"
+    monkeypatch.setattr(
+        "sys.argv", ["renux", str(missing), "foo", "bar", "--yes"]
+    )
+
+    with pytest.raises(SystemExit) as exc_info:
+        main()
+
+    assert exc_info.value.code != 0
+    assert "does not exist" in capsys.readouterr().out
 
 
 def test_headless_no_matches(tmp_path, monkeypatch):
